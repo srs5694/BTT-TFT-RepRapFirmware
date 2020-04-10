@@ -311,7 +311,7 @@ void loopCheckHeater(void)
     if(update_waiting == true)                {updateNextHeatCheckTime();break;}
     if(OS_GetTimeMs() < nextHeatCheckTime)     break;
     if(RequestCommandInfoIsRunning())          break; //to avoid colision in Gcode response processing
-    if(storeCmd("M105\n") == false)            break;
+    if(storeCmd("M408\n") == false)            break; //RRF3
     updateNextHeatCheckTime();
     update_waiting = true;
   }while(0);
