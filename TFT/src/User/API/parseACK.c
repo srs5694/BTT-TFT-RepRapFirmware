@@ -137,8 +137,6 @@ void parseACK(void)
                            // Avoid can't getting this parameter due to disabled M503 in Marlin
     }
 
-    
-
 
     if(ack_seen("status"))
     {

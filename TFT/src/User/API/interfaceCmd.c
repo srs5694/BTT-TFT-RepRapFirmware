@@ -363,6 +363,7 @@ void sendQueueCmd(void)
           case 408: //M408 RRF3
             heatSetUpdateWaiting(false);
             avoid_terminal = infoSettings.terminalACK;
+            infoHost.wait = infoHost.connected;
 
             break;
 
