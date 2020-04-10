@@ -360,6 +360,12 @@ void sendQueueCmd(void)
 
             break;
 
+          case 408: //M408 RRF3
+            heatSetUpdateWaiting(false);
+            avoid_terminal = infoSettings.terminalACK;
+
+            break;
+
           case 106: //M106
           {
             u8 i = 0;
@@ -584,5 +590,5 @@ void sendQueueCmd(void)
   infoCmd.count--;
   infoCmd.index_r = (infoCmd.index_r + 1) % CMD_MAX_LIST;
 
-  infoHost.wait = infoHost.connected;          //
+  // infoHost.wait = infoHost.connected;          //
 }
