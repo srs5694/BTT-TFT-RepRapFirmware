@@ -52,6 +52,4 @@ void reValueBed(int icon_pos);
 void reDrawTime(int icon_pos);
 void reDrawLayer(int icon_pos);
 
-void loopCheckPrinting(void);
-
 #endif

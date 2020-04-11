@@ -242,8 +242,8 @@
  */
 #define ONBOARD_SD_SUPPORT
 #ifdef ONBOARD_SD_SUPPORT
-  #define M27_REFRESH                3        // Time in sec for M27 command
-  #define M27_WATCH_OTHER_SOURCES    true     // if true the polling on M27 report is always active. Case: SD print started not from TFT35
+  //#define M27_REFRESH                3        // Time in sec for M27 command
+  //#define M27_WATCH_OTHER_SOURCES    true     // if true the polling on M27 report is always active. Case: SD print started not from TFT35
 #endif
 
 /**
@@ -287,8 +287,8 @@
  */
 #define CUSTOM_0_LABEL "Disable Steppers"
 #define CUSTOM_0_GCODE "M84\n"
-#define CUSTOM_1_LABEL "Init SD Card"
-#define CUSTOM_1_GCODE "M21\n"
+#define CUSTOM_1_LABEL "IP"
+#define CUSTOM_1_GCODE "M409 K\"network\"\n"
 #define CUSTOM_2_LABEL "Release SD Card"
 #define CUSTOM_2_GCODE "M22\n"
 #define CUSTOM_3_LABEL "Enable Leveling State"

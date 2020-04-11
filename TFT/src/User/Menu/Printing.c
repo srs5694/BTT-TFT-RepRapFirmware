@@ -819,19 +819,3 @@ void getGcodeFromFile(void)
     completePrinting();
   }
 }
-
-void loopCheckPrinting(void)
-{
-  static u32  nextTime=0;
-
-  do
-  {  /* WAIT FOR M27	*/
-    if(update_waiting == true) {nextTime=OS_GetTimeMs()+update_time; break;}
-    if(OS_GetTimeMs() < nextTime) break;
-
-    if(storeCmd("M27\n")==false) break;
-
-    nextTime=OS_GetTimeMs()+update_time;
-    update_waiting=true;
-  }while(0);
-}

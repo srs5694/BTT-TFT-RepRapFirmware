@@ -92,12 +92,12 @@ void ackPopupInfo(const char *info)
 
   if (info == echomagic)
   {
-    statusScreen_setMsg((u8 *)info, (u8 *)dmaL2Cache + ack_index);
+    statusScreen_setMsg((u8 *)info, strtok ((u8 *)dmaL2Cache + ack_index ,"\""));
   }
   if (infoMenu.menu[infoMenu.cur] == menuTerminal) return;
   if (infoMenu.menu[infoMenu.cur] == menuStatus && info == echomagic) return;
 
-  popupReminder((u8* )info, (u8 *)dmaL2Cache + ack_index);
+  popupReminder((u8* )info, strtok ((u8 *)dmaL2Cache + ack_index ,"\""));
 }
 
 bool dmaL1NotEmpty(uint8_t port)
@@ -131,7 +131,7 @@ void parseACK(void)
       // if(!ack_seen("beep_freq") || !ack_seen("message") || !ack_seen("status"))  goto parse_end;  //the first response should be such as "T:25/50 ok\n"
       updateNextHeatCheckTime();
       infoHost.connected = true;
-      // storeCmd("M408\n"); //RRF3
+      storeCmd("M409 K\"network\"\n"); //RRF3
       // storeCmd("M115\n");
       // storeCmd("M503 S0\n");
       // storeCmd("M92\n"); // Steps/mm of extruder is an important parameter for Smart filament runout
@@ -231,12 +231,12 @@ void parseACK(void)
     }
 
 #ifdef ONBOARD_SD_SUPPORT
-    else if(ack_seen(bsdnoprintingmagic) && infoMenu.menu[infoMenu.cur] == menuPrinting)
+    else if(!ack_seen("status\":\"P") && infoMenu.menu[infoMenu.cur] == menuPrinting)
     {
       infoHost.printing = false;
       completePrinting();
     }
-    else if(ack_seen(bsdprintingmagic))
+    else if(ack_seen("status\":\"P"))
     {
       if(infoMenu.menu[infoMenu.cur] != menuPrinting && !infoHost.printing) {
         infoMenu.menu[++infoMenu.cur] = menuPrinting;
@@ -244,10 +244,9 @@ void parseACK(void)
       }
       // Parsing printing data
       // Example: SD printing byte 123/12345
-      char *ptr;
-      u32 position = strtol(strstr(dmaL2Cache, "byte ")+5, &ptr, 10);
-      setPrintCur(position);
-//      powerFailedCache(position);
+      // char *ptr;
+      // u32 position = strtol(strstr(dmaL2Cache, "byte ")+5, &ptr, 10);
+      // setPrintCur(position);
     }
 #endif
   //parse and store stepper steps/mm values
@@ -384,6 +383,11 @@ void parseACK(void)
       ackPopupInfo(echomagic);
     }
     else if(ack_seen("message\":\""))
+    {
+      BUZZER_PLAY(sound_notify);
+      ackPopupInfo(echomagic);
+    }
+    else if(ack_seen("actualIP\":\""))
     {
       BUZZER_PLAY(sound_notify);
       ackPopupInfo(echomagic);
