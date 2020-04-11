@@ -171,34 +171,15 @@ u8 *getCurGcodeName(char *path)
 
 void menuBeforePrinting(void)
 {
-  long size = 0;
   switch (infoFile.source)
   {
     case BOARD_SD: // GCode from file on ONBOARD SD
-      size = request_M23(infoFile.title+5);
+      request_M23(infoFile.title+5);
 
-      //  if( powerFailedCreate(infoFile.title)==false)
-      //  {
-      //
-      //  }	  // FIXME: Powerfail resume is not yet supported for ONBOARD_SD. Need more work.
+      // infoPrinting.size  = size;
 
-      if(size == 0)
-      {
-        ExitDir();
-        infoMenu.cur--;
-        return;
-      }
-
-      infoPrinting.size  = size;
-
-      //    if(powerFailedExist())
-      //    {
       request_M24(0);
-      //    }
-      //    else
-      //    {
-      //      request_M24(infoBreakPoint.offset);
-      //    }
+      
       printSetUpdateWaiting(true);
 
       if (infoMachineSettings.autoReportSDStatus ==1){

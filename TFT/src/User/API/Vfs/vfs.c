@@ -52,7 +52,8 @@ void resetInfoFile(void)
 */
 bool scanPrintFiles(void)
 {
-  clearInfoFile();
+  
+  // clearInfoFile();
   switch (infoFile.source)
   {
     case TFT_SD:
@@ -60,7 +61,7 @@ bool scanPrintFiles(void)
       return scanPrintFilesFatFs();
 
     case BOARD_SD:
-      return scanPrintFilesGcodeFs();
+      return scanPrintFilesGcodeFs(strchr(infoFile.title ,':')+1);
   }
   return false;
 }

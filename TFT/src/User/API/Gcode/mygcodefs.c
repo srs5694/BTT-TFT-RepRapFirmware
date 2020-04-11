@@ -18,28 +18,25 @@ PI3MK2~1.GCO 11081207
 /YEST~1/PI3MK2~2.GCO 11081207
 End file list
 */
-bool scanPrintFilesGcodeFs(void)
+bool scanPrintFilesGcodeFs(char *nextdir)
 {
-  clearInfoFile();
-
-  char *ret = request_M20();
+  char *ret = request_M20(nextdir);
   char *data = malloc(strlen(ret) + 1);
   strcpy(data,ret);
+
+  clearInfoFile();
+
   clearRequestCommandInfo();
   char s[3];
 
   strcpy(s, ",");
 
   data = strtok (data ,"]"); // обрезаем конец
+
   char *line = strtok(strchr(data ,'files":[')+1, s);
   for (;line != NULL;line = strtok(NULL, s))
   {
-    // if (strcmp(line,"Begin file list") == 0 || strcmp(line,"End file list") == 0 || strcmp(line,"ok") == 0) continue; // Start and Stop tag
-    // if (strlen(line) < strlen(infoFile.title)-4) continue; // No path line exclude
-    if (strlen(infoFile.title) > 4 && strstr(line,infoFile.title+4) == NULL) continue; // No current directory
-
-    char *pline = line + 1 + strlen(infoFile.title) - 4;
-    if (strlen(infoFile.title) > 4)pline++;
+    char *pline = line + 1;
 
     if (strchr(pline, '*') == NULL)
     {

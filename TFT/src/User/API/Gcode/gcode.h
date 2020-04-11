@@ -21,12 +21,12 @@ extern REQUEST_COMMAND_INFO requestCommandInfo;
 
 void clearRequestCommandInfo(void);
 bool RequestCommandInfoIsRunning(void);
-char * request_M20(void);
+char * request_M20(char *nextdir);
 char * request_M33(char *filename);
 bool request_M25(void);
 bool request_M27(int seconds);
 bool request_M524(void);
 bool request_M24(int pos);
-long request_M23(char *filename);
+bool request_M23(char *filename);
 
 #endif

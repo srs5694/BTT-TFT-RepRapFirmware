@@ -26,24 +26,32 @@ void clearRequestCommandInfo(void)
 }
 
 /*
-SENDING:M20
-Begin file list
-PI3MK2~1.GCO 11081207
-/YEST~1/TEST2/PI3MK2~1.GCO 11081207
-/YEST~1/TEST2/PI3MK2~3.GCO 11081207
-/YEST~1/TEST2/PI3MK2~2.GCO 11081207
-/YEST~1/TEST2/PI3MK2~4.GCO 11081207
-/YEST~1/TEST2/PI3MK2~5.GCO 11081207
-/YEST~1/PI3MK2~1.GCO 11081207
-/YEST~1/PI3MK2~3.GCO 11081207
-/YEST~1/PI3MK2~2.GCO 11081207
-End file list
+  * SENDING:M20
+  * Begin file list
+  * PI3MK2~1.GCO 11081207
+  * /YEST~1/TEST2/PI3MK2~1.GCO 11081207
+  * /YEST~1/TEST2/PI3MK2~3.GCO 11081207
+  * /YEST~1/TEST2/PI3MK2~2.GCO 11081207
+  * /YEST~1/TEST2/PI3MK2~4.GCO 11081207
+  * /YEST~1/TEST2/PI3MK2~5.GCO 11081207
+  * /YEST~1/PI3MK2~1.GCO 11081207
+  * /YEST~1/PI3MK2~3.GCO 11081207
+  * /YEST~1/PI3MK2~2.GCO 11081207
+  * End file list
 */
-char *request_M20(void)
+char * request_M20(char *nextdir)
 {
-  strcpy(requestCommandInfo.command,"M20 S2\n");
+  if (nextdir == NULL) 
+  {
+    strcpy(requestCommandInfo.command,"M20 S2\n");
+  }
+  else
+  {
+    sprintf(requestCommandInfo.command, "M20 S2 P/gcodes/%s\n",nextdir);
+  }
+  
   strcpy(requestCommandInfo.startMagic,"{\"dir\"");
-  strcpy(requestCommandInfo.stopMagic,",\"next\"");
+  strcpy(requestCommandInfo.stopMagic,",\"err\"");
   strcpy(requestCommandInfo.errorMagic,"Error");
   resetRequestCommandInfo();
   mustStoreCmd(requestCommandInfo.command);
@@ -93,27 +101,15 @@ char * request_M33(char *filename)
  * echo:Now fresh file: YEST~1/TEST2/PI3MK2~5.GCO
  * File opened: PI3MK2~5.GCO Size: 11081207
  * File selected
+ * RRF3 не отдаёт в ответ ничего
  **/
-long request_M23(char *filename)
+bool request_M23(char *filename)
 {
-  sprintf(requestCommandInfo.command, "M23 %s\n",filename);
-  strcpy(requestCommandInfo.startMagic, "File opened");
-  strcpy(requestCommandInfo.stopMagic,"File selected");
-  strcpy(requestCommandInfo.errorMagic,"open failed");
-  resetRequestCommandInfo();
-  mustStoreCmd(requestCommandInfo.command);
-  // Wait for response
-  WaitingGcodeResponse = 1;
-  while (!requestCommandInfo.done)
-  {
-    loopProcess();
-  }
-  WaitingGcodeResponse = 0;
-  // Find file size and report its.
-  char *ptr;
-  long size = strtol(strstr(requestCommandInfo.cmd_rev_buf,"Size:")+5, &ptr, 10);
-  clearRequestCommandInfo();
-  return size;
+  char command[100];
+  sprintf(command, "M23 %s\n",filename);
+  mustStoreCmd(command);
+
+  return true;
 }
 
 /**

@@ -4,6 +4,6 @@
 #include "stdbool.h"
 #include "gcode.h"
 
-bool scanPrintFilesGcodeFs(void);
+bool scanPrintFilesGcodeFs(char *dir);
 
 #endif
