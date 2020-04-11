@@ -395,6 +395,21 @@ void parseACK(void)
       BUZZER_PLAY(sound_notify);
       ackPopupInfo(echomagic);
     }
+    else if(ack_seen("actualIP\":\""))
+    {
+      BUZZER_PLAY(sound_notify);
+      ackPopupInfo(echomagic);
+    }
+    // beep buzzer
+    else if(ack_seen("beep_freq\":"))
+    {
+      uint32_t freq = ack_value();
+      if(ack_seen("beep_length\":"))
+      {
+        Buzzer_TurnOn(freq,ack_value());
+      }
+
+    }
     
 
   parse_end:
