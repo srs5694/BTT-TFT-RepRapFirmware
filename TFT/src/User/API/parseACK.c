@@ -206,31 +206,26 @@ void parseACK(void)
         storegantry(2, ack_third_value());
       }
 
+      // parse and store feed rate percentage
       if(ack_seen("sfactor\":"))
       {
         speedSetPercent(0,ack_value());
       }
 
+      // parse and store flow rate percentage
       if(ack_seen("efactor\":["))
       {
         speedSetPercent(1,ack_value());
       }
-    }
 
-
-    if(ack_seen("X:") && ack_index == 2)
-    {
-      storegantry(0, ack_value());
-      if (ack_seen("Y:"))
+      if (ack_seen("fanPercent\":["))
       {
-        storegantry(1, ack_value());
-        if (ack_seen("Z:"))
-        {
-          storegantry(2, ack_value());
-        }
+        fanSetSpeed(0, ack_value()*2.55+0.5);
+        // fanSetSpeed(1, ack_second_value());
       }
     }
-    else if(ack_seen("Count E:")) // Parse actual extruder position, response of "M114 E\n", required "M114_DETAIL" in Marlin
+
+    if(ack_seen("Count E:")) // Parse actual extruder position, response of "M114 E\n", required "M114_DETAIL" in Marlin
     {
       coordinateSetAxisActualSteps(E_AXIS, ack_value());
     }
@@ -367,20 +362,7 @@ void parseACK(void)
         setParameter(P_PROBE_OFFSET,Z_STEPPER, ack_value());
       }
     }
-    else if (ack_seen(" F0:"))
-    {
-      fanSetSpeed(0, ack_value());
-    }
-  // parse and store feed rate percentage
-    else if(ack_seen("FR:"))
-    {
-      speedSetPercent(0,ack_value());
-    }
-  // parse and store flow rate percentage
-    else if(ack_seen("Flow: "))
-    {
-      speedSetPercent(1,ack_value());
-    }
+    
   //Parse error messages & Echo messages
     else if(ack_seen(errormagic))
     {
@@ -403,9 +385,8 @@ void parseACK(void)
     }
     else if(ack_seen("message\":\""))
     {
-      BUZZER_PLAY(sound_error);
-
-      ackPopupInfo(errormagic);
+      BUZZER_PLAY(sound_notify);
+      ackPopupInfo(echomagic);
     }
     
 
