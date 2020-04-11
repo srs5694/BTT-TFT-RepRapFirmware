@@ -53,6 +53,11 @@ static void initElements(u8 position)
 
 static float baby_step_value = 0.0f;
 
+void setBabyStep(float babystep)
+{
+  baby_step_value = babystep;
+}
+
 void babyStepReset(void)
 {
   baby_step_value = 0.0f;
@@ -92,14 +97,14 @@ void menuBabyStep(void)
       case KEY_ICON_0:
         if(baby_step_value - elementsUnit.ele[elementsUnit.cur] > BABYSTEP_MIN_VALUE)
         {
-          if(storeCmd("M290 Z-%.2f\n",elementsUnit.ele[elementsUnit.cur]))
+          if(storeCmd("M290 S-%.2f\n",elementsUnit.ele[elementsUnit.cur]))
             baby_step_value -= elementsUnit.ele[elementsUnit.cur];
         }
         break;
       case KEY_ICON_3:
         if(baby_step_value + elementsUnit.ele[elementsUnit.cur] < BABYSTEP_MAX_VALUE)
         {
-          if(storeCmd("M290 Z%.2f\n",elementsUnit.ele[elementsUnit.cur]))
+          if(storeCmd("M290 S%.2f\n",elementsUnit.ele[elementsUnit.cur]))
             baby_step_value += elementsUnit.ele[elementsUnit.cur];
         }
         break;
@@ -114,7 +119,7 @@ void menuBabyStep(void)
         menuDrawItem(&babyStepItems.items[key_num], key_num);
         break;
       case KEY_ICON_6:
-        if(storeCmd("M290 Z%.2f\n",-baby_step_value))
+        if(storeCmd("M290 R0 S0\n"))
           baby_step_value = 0.0f;
         break;
       case KEY_ICON_7:
@@ -124,7 +129,8 @@ void menuBabyStep(void)
         #if LCD_ENCODER_SUPPORT
           if(encoderPosition)
           {
-            baby_step_value += elementsUnit.ele[elementsUnit.cur]*encoderPosition;
+            if(storeCmd("M290 S%.2f\n",elementsUnit.ele[elementsUnit.cur]*encoderPosition))
+              baby_step_value += elementsUnit.ele[elementsUnit.cur]*encoderPosition;
             encoderPosition = 0;
           }
           LCD_LoopEncoder();
@@ -135,7 +141,7 @@ void menuBabyStep(void)
     {
       now = baby_step_value;
       babyStepReDraw();
-    }
+    };
     loopProcess();
   }
 }

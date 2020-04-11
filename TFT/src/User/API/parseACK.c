@@ -251,9 +251,14 @@ void parseACK(void)
         storeCmd("M409 K\"job\"\n");
       }
 
-      if(ack_seen("fraction_printed\":")) // Parse actual extruder position, response of "M114 E\n", required "M114_DETAIL" in Marlin
+      if(ack_seen("fraction_printed\":"))
       {
         setPrintCur(ack_value()*100);
+      }
+
+      if(ack_seen("babystep\":"))
+      {
+        setBabyStep(ack_value());
       }
 
     }
