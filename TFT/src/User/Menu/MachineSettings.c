@@ -285,7 +285,8 @@ LABEL_MACHINE_SETTINGS,
   {ICON_RGB_SETTINGS,         LABEL_RGB_SETTINGS},
   {ICON_GCODE,                LABEL_GCODE},
   {ICON_SHUT_DOWN,            LABEL_SHUT_DOWN},
-  {ICON_PARAMETER,            LABEL_PARAMETER_SETTING},
+  // {ICON_PARAMETER,            LABEL_PARAMETER_SETTING},
+  {ICON_BACKGROUND,           LABEL_BACKGROUND},
   {ICON_BACKGROUND,           LABEL_BACKGROUND},
   {ICON_BACKGROUND,           LABEL_BACKGROUND},
   {ICON_BACK,                 LABEL_BACK},}
@@ -319,10 +320,10 @@ void menuMachineSettings(void)
         storeCmd("M81\n");
         break;
 
-      case KEY_ICON_4:
-        mustStoreCmd("M503 S0\n");
-        infoMenu.menu[++infoMenu.cur] = menuParameterSettings;
-        break;
+      // case KEY_ICON_4:
+      //   mustStoreCmd("M503 S0\n");
+      //   infoMenu.menu[++infoMenu.cur] = menuParameterSettings;
+      //   break;
 
       case KEY_ICON_7:
         infoMenu.cur--;
