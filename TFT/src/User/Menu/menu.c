@@ -386,8 +386,6 @@ GUI_POINT getIconStartPoint(int index){
 
 void loopBackEnd(void)
 {
-  getGcodeFromFile();                 //Get Gcode command from the file to be printed
-
   sendQueueCmd();                     //Parse and send Gcode commands in the queue
 
   parseACK();                         //Parse the received slave response information

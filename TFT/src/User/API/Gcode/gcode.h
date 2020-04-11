@@ -24,7 +24,6 @@ bool RequestCommandInfoIsRunning(void);
 char * request_M20(char *nextdir);
 char * request_M33(char *filename);
 bool request_M25(void);
-bool request_M27(int seconds);
 bool request_M524(void);
 bool request_M24(int pos);
 bool request_M23(char *filename);

@@ -293,10 +293,6 @@ void sendQueueCmd(void)
             coordinateSetKnown(false);
             break;
 
-          case 27: //M27
-            printSetUpdateWaiting(false);
-          break;
-
           case 80: //M80
             #ifdef PS_ON_PIN
               PS_ON_On();

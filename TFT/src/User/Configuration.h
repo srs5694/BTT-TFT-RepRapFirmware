@@ -236,17 +236,6 @@
 #define UNIFIED_MENU
 
 /**
- * SD support
- * The TFT will auto configure M27 AutoReport with M115 command
- * Set the time interval to poll SD Printing status if Marlin reports M27 disabled.
- */
-#define ONBOARD_SD_SUPPORT
-#ifdef ONBOARD_SD_SUPPORT
-  //#define M27_REFRESH                3        // Time in sec for M27 command
-  //#define M27_WATCH_OTHER_SOURCES    true     // if true the polling on M27 report is always active. Case: SD print started not from TFT35
-#endif
-
-/**
  * Power Loss Recovery
  *
  * Most suitable for Delta printers since most printers will crash into printed model when homing after powerloss.
@@ -289,8 +278,8 @@
 #define CUSTOM_0_GCODE "M84\n"
 #define CUSTOM_1_LABEL "IP"
 #define CUSTOM_1_GCODE "M409 K\"network\"\n"
-#define CUSTOM_2_LABEL "Release SD Card"
-#define CUSTOM_2_GCODE "M22\n"
+#define CUSTOM_2_LABEL "M409 Kjob"
+#define CUSTOM_2_GCODE "M409 K\"job\"\n"
 #define CUSTOM_3_LABEL "Enable Leveling State"
 #define CUSTOM_3_GCODE "M420 S1\n"
 #define CUSTOM_4_LABEL "Save to EEPROM"

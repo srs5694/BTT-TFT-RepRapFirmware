@@ -132,7 +132,8 @@ bool request_M24(int pos)
  **/
 bool request_M524(void)
 {
-  mustStoreCmd("M524\n");
+  request_M25();
+  mustStoreCmd("M0 H1\n");
   return true;
 }
 /**
@@ -141,18 +142,5 @@ bool request_M524(void)
 bool request_M25(void)
 {
   mustStoreCmd("M25\n");
-  return true;
-}
-
-/**
- * Print status ( start auto report)
- * ->  SD printing byte 123/12345
- * ->  Not SD printing
- **/
-bool request_M27(int seconds)
-{
-  char command[10];
-  sprintf(command, "M27 S%d\n",seconds);
-  mustStoreCmd(command);
   return true;
 }

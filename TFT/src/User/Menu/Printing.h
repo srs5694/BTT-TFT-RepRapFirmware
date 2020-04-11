@@ -26,6 +26,8 @@ void setM0Pause(bool m0_pause);
 bool setPrintPause(bool is_pause,bool is_m0pause);
 
 bool isPrinting(void);
+void setPrinting(bool print);
+void setPause(bool is_pause);
 bool isPause(void);
 bool isM0_Pause(void);
 void setPrintingTime(u32 RTtime);
@@ -35,10 +37,6 @@ void setPrintCur(u32 cur);
 
 u8   getPrintProgress(void);
 u32  getPrintTime(void);
-
-void printSetUpdateWaiting(bool isWaiting);
-
-void getGcodeFromFile(void);
 
 void menuBeforePrinting(void);
 void menuPrinting(void);

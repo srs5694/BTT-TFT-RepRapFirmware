@@ -229,87 +229,33 @@ void parseACK(void)
     {
       coordinateSetAxisActualSteps(E_AXIS, ack_value());
     }
-
-#ifdef ONBOARD_SD_SUPPORT
-    else if(!ack_seen("status\":\"P") && infoMenu.menu[infoMenu.cur] == menuPrinting)
+    else if(infoHost.printing && ack_seen("status\":\"I"))
     {
       infoHost.printing = false;
       completePrinting();
+    }
+    // on PAUSE
+    else if(infoHost.printing && ack_seen("status\":\"A"))
+    {
+      setPause(true);
     }
     else if(ack_seen("status\":\"P"))
     {
       if(infoMenu.menu[infoMenu.cur] != menuPrinting && !infoHost.printing) {
         infoMenu.menu[++infoMenu.cur] = menuPrinting;
         infoHost.printing=true;
+        storeCmd("M409 K\"job\"\n");
       }
-      // Parsing printing data
-      // Example: SD printing byte 123/12345
-      // char *ptr;
-      // u32 position = strtol(strstr(dmaL2Cache, "byte ")+5, &ptr, 10);
+
+      if (isPause()) setPause(false);
+
+      setPrinting(true);
+      
       if(ack_seen("fraction_printed\":")) // Parse actual extruder position, response of "M114 E\n", required "M114_DETAIL" in Marlin
       {
         setPrintCur(ack_value()*100);
       }
-    }
-#endif
-  //parse and store stepper steps/mm values
-    else if(ack_seen("M92 X"))
-    {
-                        setParameter(P_STEPS_PER_MM, X_STEPPER, ack_value());
-      if(ack_seen("Y")) setParameter(P_STEPS_PER_MM, Y_STEPPER, ack_value());
-      if(ack_seen("Z")) setParameter(P_STEPS_PER_MM, Z_STEPPER, ack_value());
-      if(ack_seen("E")) setParameter(P_STEPS_PER_MM, E_STEPPER, ack_value());
-    }
-  //parse and store Max Feed Rate values
-    else if(ack_seen("M203 X")){
-                        setParameter(P_MAX_FEED_RATE, X_STEPPER, ack_value());
-      if(ack_seen("Y")) setParameter(P_MAX_FEED_RATE, Y_STEPPER, ack_value());
-      if(ack_seen("Z")) setParameter(P_MAX_FEED_RATE, Z_STEPPER, ack_value());
-      if(ack_seen("E")) setParameter(P_MAX_FEED_RATE, E_STEPPER, ack_value());
-    }
-  //parse and store Max Acceleration values
-    else if(ack_seen("M201 X")){
-                        setParameter(P_MAX_ACCELERATION, X_STEPPER, ack_value());
-      if(ack_seen("Y")) setParameter(P_MAX_ACCELERATION, Y_STEPPER, ack_value());
-      if(ack_seen("Z")) setParameter(P_MAX_ACCELERATION, Z_STEPPER, ack_value());
-      if(ack_seen("E")) setParameter(P_MAX_ACCELERATION, E_STEPPER, ack_value());
 
-    }
-  //parse and store Acceleration values
-    else if(ack_seen("M204 P")){
-                        setParameter(P_ACCELERATION, X_STEPPER, ack_value());
-      if(ack_seen("R")) setParameter(P_ACCELERATION, Y_STEPPER, ack_value());
-      if(ack_seen("T")) setParameter(P_ACCELERATION, Z_STEPPER, ack_value());
-    }
-  //parse and store Probe Offset values
-    else if(ack_seen("M851 X")){
-                        setParameter(P_PROBE_OFFSET, X_STEPPER, ack_value());
-      if(ack_seen("Y")) setParameter(P_PROBE_OFFSET, Y_STEPPER, ack_value());
-      if(ack_seen("Z")) setParameter(P_PROBE_OFFSET, Z_STEPPER, ack_value());
-    }
-  //parse and store TMC Bump sensitivity values
-    else if(ack_seen("M914 X")){
-                        setParameter(P_BUMPSENSITIVITY, X_STEPPER, ack_value());
-      if(ack_seen("Y")) setParameter(P_BUMPSENSITIVITY, Y_STEPPER, ack_value());
-      if(ack_seen("Z")) setParameter(P_BUMPSENSITIVITY, Z_STEPPER, ack_value());
-    }
-  //parse and store stepper driver current values
-    else if(ack_seen("M906 X")){
-                        setParameter(P_CURRENT, X_STEPPER, ack_value());
-      if(ack_seen("Y")) setParameter(P_CURRENT, Y_STEPPER, ack_value());
-      if(ack_seen("Z")) setParameter(P_CURRENT, Z_STEPPER, ack_value());
-    }
-    else if(ack_seen("M906 I1")){
-      if(ack_seen("X")) dualstepper[X_STEPPER] = true;
-      if(ack_seen("Y")) dualstepper[Y_STEPPER] = true;
-      if(ack_seen("Z")) dualstepper[Z_STEPPER] = true;
-    }
-    else if(ack_seen("M906 T0 E")){
-      setParameter(P_CURRENT, E_STEPPER, ack_value());
-    }
-    else if(ack_seen("M906 T1 E")){
-      setParameter(P_CURRENT, E2_STEPPER, ack_value());
-      dualstepper[E_STEPPER] = true;
     }
   // Parse M115 capability report
     else if(ack_seen("Cap:AUTOREPORT_TEMP:"))
@@ -395,10 +341,14 @@ void parseACK(void)
       BUZZER_PLAY(sound_notify);
       ackPopupInfo(echomagic);
     }
-    else if(ack_seen("actualIP\":\""))
+    // ответ от M409 K"job"
+    else if(ack_seen("lastFileName\":\""))
     {
-      BUZZER_PLAY(sound_notify);
-      ackPopupInfo(echomagic);
+      // BUZZER_PLAY(sound_notify);
+      // ackPopupInfo(echomagic);
+      // infoFile.title = strtok ((u8 *)dmaL2Cache + ack_index ,"\"");
+      // printingItems.title.address = getCurGcodeName(strtok ((u8 *)dmaL2Cache + ack_index ,"\""));
+
     }
     // beep buzzer
     else if(ack_seen("beep_freq\":"))

@@ -73,10 +73,9 @@ void scrollFileNameCreate(u8 i)
   }
   else if(num<infoFile.F_num+infoFile.f_num)
   {
-    Scroll_CreatePara(&gcodeScroll, (u8* )((infoFile.source == BOARD_SD) ? infoFile.Longfile[num-infoFile.F_num] : infoFile.file[num-infoFile.F_num]), &gcodeRect[i]);
+    Scroll_CreatePara(&gcodeScroll, (u8* )(infoFile.Longfile[num-infoFile.F_num]), &gcodeRect[i]);
   }
 }
-
 
 void normalNameDisp(const GUI_RECT *rect, u8 *name)
 {
@@ -120,23 +119,8 @@ void gocdeIconDraw(void)
   for( ;(i + infoFile.cur_page * NUM_PER_PAGE < infoFile.f_num + infoFile.F_num) && (i < NUM_PER_PAGE) ;i++)  // gcode file
   {
     curItem.icon = ICON_FILE;
-    if (infoFile.source == BOARD_SD) { // on board long file name, M33 is required.
-      menuDrawItem(&curItem, i);
-      normalNameDisp(&gcodeRect[i], (u8* )infoFile.Longfile[i + infoFile.cur_page * NUM_PER_PAGE - infoFile.F_num]);
-    } else {
-      // if model preview bmp exists, display bmp directly without writing to flash
-      gn = strlen(infoFile.file[i + infoFile.cur_page * NUM_PER_PAGE - infoFile.F_num]) - 6; // -6 means ".gcode"
-      gnew = malloc(gn + 10);
-      strcpy(gnew, getCurFileSource());
-      strncat(gnew, infoFile.file[i + infoFile.cur_page * NUM_PER_PAGE - infoFile.F_num], gn);
-
-      if(bmp_DirectDisplay(getIconStartPoint(i),strcat(gnew, "_"STRINGIFY(ICON_WIDTH)".bmp")) != true){
-        menuDrawItem(&curItem, i);
-      }
-      free(gnew);
-      // model preview -- end
-      normalNameDisp(&gcodeRect[i], (u8* )infoFile.file[i + infoFile.cur_page * NUM_PER_PAGE - infoFile.F_num]);
-    }
+    menuDrawItem(&curItem, i);
+    normalNameDisp(&gcodeRect[i], (u8* )infoFile.Longfile[i + infoFile.cur_page * NUM_PER_PAGE - infoFile.F_num]);
   }
 
   //clear blank icons
@@ -301,27 +285,6 @@ void menuPrintFromSource(void)
             if(infoHost.connected !=true) break;
             if(EnterDir(infoFile.file[key_num + start - infoFile.F_num]) == false) break;
 
-            if (infoFile.source == TFT_SD) {
-              //load bmp preview in flash if file exists
-              int16_t gn;
-              char *gnew;
-              gn = strlen(infoFile.file[key_num + start - infoFile.F_num]) - 6; // -6 means ".gcode"
-              if(gn < 0) gn = 0; // for extension name ".g", ".gco" file, TODO: improve here in next version 
-              gnew = malloc(gn + 10);
-              if (gnew != NULL) {
-                strcpy(gnew, getCurFileSource());
-                strncat(gnew, infoFile.file[key_num + start - infoFile.F_num], gn);
-
-                if(bmpDecode(strcat(gnew, "_"STRINGIFY(ICON_WIDTH)".bmp"),ICON_ADDR(ICON_PREVIEW)) == true){
-                  icon_pre = true;
-                }
-                else{
-                  icon_pre = false;
-                }
-                free(gnew);
-              }
-              //-load bmp preview in flash if file exists - end
-            }
             infoMenu.menu[++infoMenu.cur] = menuBeforePrinting;
           }
         }
@@ -366,18 +329,10 @@ MENUITEMS sourceSelItems = {
 //  title
 LABEL_PRINT,
 // icon                       label
- {{ICON_ONTFT_SD,            LABEL_TFTSD},
- #ifdef ONBOARD_SD_SUPPORT
+ {
   {ICON_ONBOARD_SD,           LABEL_ONBOARDSD},
- #endif
- #ifdef U_DISK_SUPPROT
-  {ICON_U_DISK,               LABEL_U_DISK},
- #else
   {ICON_BACKGROUND,           LABEL_BACKGROUND},
- #endif
- #ifndef ONBOARD_SD_SUPPORT
   {ICON_BACKGROUND,           LABEL_BACKGROUND},
- #endif
   {ICON_BACKGROUND,           LABEL_BACKGROUND},
   {ICON_BACKGROUND,           LABEL_BACKGROUND},
   {ICON_BACKGROUND,           LABEL_BACKGROUND},
@@ -396,32 +351,11 @@ void menuPrint(void)
     switch(key_num)
     {
       case KEY_ICON_0:
-        list_mode = infoSettings.file_listmode; //follow list mode setting in TFT sd card
-        infoFile.source = TFT_SD;
-        infoMenu.menu[++infoMenu.cur] = menuPrintFromSource;
-        infoMenu.menu[++infoMenu.cur] = menuPowerOff;
-        goto selectEnd;
-
-      #ifdef ONBOARD_SD_SUPPORT
-      case KEY_ICON_1:
         list_mode = true; //force list mode in Onboard sd casd
         infoFile.source = BOARD_SD;
         infoMenu.menu[++infoMenu.cur] = menuPrintFromSource;   //TODO: fix here,  onboard sd card PLR feature
         goto selectEnd;
-      #endif
 
-      #ifdef U_DISK_SUPPROT
-        #ifdef ONBOARD_SD_SUPPORT
-          case KEY_ICON_2:
-        #else
-          case KEY_ICON_1:
-        #endif
-        list_mode = infoSettings.file_listmode; //follow list mode setting in usb disk
-        infoFile.source = TFT_UDISK;
-        infoMenu.menu[++infoMenu.cur] = menuPrintFromSource;
-        infoMenu.menu[++infoMenu.cur] = menuPowerOff;
-        goto selectEnd;
-      #endif
 
       case KEY_ICON_7:
         infoMenu.cur--;

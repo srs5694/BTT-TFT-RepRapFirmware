@@ -72,21 +72,7 @@ const ITEM itemIsPause[2] = {
   {ICON_RESUME,               LABEL_RESUME},
 };
 
-#ifndef M27_WATCH_OTHER_SOURCES
-#define M27_WATCH_OTHER_SOURCES    false
-#endif
-
-#ifndef M27_REFRESH
-#define M27_REFRESH   3
-#endif
-
 static PRINTING infoPrinting;
-
-#ifdef ONBOARD_SD_SUPPORT
-static bool    update_waiting = M27_WATCH_OTHER_SOURCES;
-#else
-static bool    update_waiting = false;
-#endif
 
 //
 bool isPrinting(void)
@@ -94,7 +80,17 @@ bool isPrinting(void)
   return infoPrinting.printing;
 }
 
-//
+void setPrinting(bool print)
+{
+  infoPrinting.printing = print;
+}
+
+void setPause(bool is_pause)
+{
+  infoPrinting.pause = is_pause;
+  resumeToPause(is_pause);
+}
+
 bool isPause(void)
 {
   return infoPrinting.pause;
@@ -138,11 +134,6 @@ u32 getPrintTime(void)
   return infoPrinting.time;
 }
 
-void printSetUpdateWaiting(bool isWaiting)
-{
-  update_waiting = isWaiting;
-}
-
 void printerGotoIdle(void)
 {
   // disable all heater
@@ -170,49 +161,9 @@ u8 *getCurGcodeName(char *path)
 
 void menuBeforePrinting(void)
 {
-  switch (infoFile.source)
-  {
-    case BOARD_SD: // GCode from file on ONBOARD SD
-      request_M23(infoFile.title+5);
-
-      // infoPrinting.size  = size;
-
-      request_M24(0);
-      
-      printSetUpdateWaiting(true);
-
-      if (infoMachineSettings.autoReportSDStatus ==1){
-        request_M27(M27_REFRESH);                //Check if there is a SD or USB print running.
-      }
-      else{
-        request_M27(0);
-      }
-
-      infoHost.printing=true; // Global lock info on printer is busy in printing.
-
-      break;
-
-    case TFT_UDISK:
-    case TFT_SD: // GCode from file on TFT SD
-      if(f_open(&infoPrinting.file,infoFile.title, FA_OPEN_EXISTING | FA_READ) != FR_OK)
-      {
-        ExitDir();
-        infoMenu.cur--;
-        return ;
-      }
-      if( powerFailedCreate(infoFile.title)==false)
-      {
-
-      }
-      powerFailedlSeek(&infoPrinting.file);
-
-      infoPrinting.size  = f_size(&infoPrinting.file);
-      infoPrinting.cur   = infoPrinting.file.fptr;
-      if(infoSettings.send_start_gcode == 1 && infoPrinting.cur == 0){ // PLR continue printing, CAN NOT use start gcode
-        mustStoreCmd(PRINT_START_GCODE);
-      }
-      break;
-  }
+  request_M23(infoFile.title+5);
+  request_M24(0);
+  infoHost.printing=true; // Global lock info on printer is busy in printing.
   infoPrinting.printing = true;
   infoMenu.menu[infoMenu.cur] = menuPrinting;
   printingItems.title.address = getCurGcodeName(infoFile.title);
@@ -240,83 +191,14 @@ bool setPrintPause(bool is_pause, bool is_m0pause)
   if(infoPrinting.pause == is_pause) return false;
 
   pauseLock = true;
-  switch (infoFile.source)
-  {
-    case BOARD_SD:
-      infoPrinting.pause = is_pause;
-      if (is_pause){
-        request_M25();
-      } else {
-        request_M24(0);
-      }
-      break;
+  infoPrinting.pause = is_pause;
 
-    case TFT_UDISK:
-    case TFT_SD:
-      infoPrinting.pause = is_pause;
-      if(infoPrinting.pause == true && is_m0pause == false){
-      while (infoCmd.count != 0) {loopProcess();}
-      }
-
-      bool isCoorRelative = coorGetRelative();
-      bool isExtrudeRelative = eGetRelative();
-      static COORDINATE tmp;
-
-      if(infoPrinting.pause)
-      {
-        //restore status before pause
-        //if pause was triggered through M0/M1 then break
-      if(is_m0pause == true) {
-        setM0Pause(is_m0pause);
-        popupReminder(textSelect(LABEL_PAUSE), textSelect(LABEL_M0_PAUSE));
-        break;
-        }
-
-        coordinateGetAll(&tmp);
-        if (isCoorRelative == true)     mustStoreCmd("G90\n");
-        if (isExtrudeRelative == true)  mustStoreCmd("M82\n");
-
-        if (heatGetCurrentTemp(heatGetCurrentToolNozzle()) > PREVENT_COLD_EXTRUSION_MINTEMP)
-        {
-          mustStoreCmd("G1 E%.5f F%d\n", tmp.axis[E_AXIS] - NOZZLE_PAUSE_RETRACT_LENGTH, NOZZLE_PAUSE_E_FEEDRATE);
-        }
-        if (coordinateIsKnown())
-        {
-          mustStoreCmd("G1 Z%.3f F%d\n", tmp.axis[Z_AXIS] + NOZZLE_PAUSE_Z_RAISE, NOZZLE_PAUSE_Z_FEEDRATE);
-          mustStoreCmd("G1 X%d Y%d F%d\n", NOZZLE_PAUSE_X_POSITION, NOZZLE_PAUSE_Y_POSITION, NOZZLE_PAUSE_XY_FEEDRATE);
-        }
-
-        if (isCoorRelative == true)     mustStoreCmd("G91\n");
-        if (isExtrudeRelative == true)  mustStoreCmd("M83\n");
-      }
-      else
-      {
-        if(isM0_Pause() == true)
-        {
-          setM0Pause(is_m0pause);
-          Serial_Puts(SERIAL_PORT, "M108\n");
-          break;
-        }
-        if (isCoorRelative == true)     mustStoreCmd("G90\n");
-        if (isExtrudeRelative == true)  mustStoreCmd("M82\n");
-
-        if (coordinateIsKnown())
-        {
-          mustStoreCmd("G1 X%.3f Y%.3f F%d\n", tmp.axis[X_AXIS], tmp.axis[Y_AXIS], NOZZLE_PAUSE_XY_FEEDRATE);
-          mustStoreCmd("G1 Z%.3f F%d\n", tmp.axis[Z_AXIS], NOZZLE_PAUSE_Z_FEEDRATE);
-        }
-        if(heatGetCurrentTemp(heatGetCurrentToolNozzle()) > PREVENT_COLD_EXTRUSION_MINTEMP)
-        {
-          mustStoreCmd("G1 E%.5f F%d\n", tmp.axis[E_AXIS] - NOZZLE_PAUSE_RETRACT_LENGTH + NOZZLE_RESUME_PURGE_LENGTH, NOZZLE_PAUSE_E_FEEDRATE);
-        }
-        mustStoreCmd("G92 E%.5f\n", tmp.axis[E_AXIS]);
-        mustStoreCmd("G1 F%d\n", tmp.feedrate);
-
-        if (isCoorRelative == true)     mustStoreCmd("G91\n");
-        if (isExtrudeRelative == true)  mustStoreCmd("M83\n");
-      }
-      break;
+  if (is_pause){
+    request_M25();
+  } else {
+    request_M24(0);
   }
+
   resumeToPause(is_pause);
   pauseLock = false;
   return true;
@@ -377,7 +259,6 @@ void reDrawFan(int icon_pos)
 
   GUI_SetTextMode(GUI_TEXTMODE_NORMAL);
 }
-
 
 void reDrawSpeed(int icon_pos)
 {
@@ -620,17 +501,6 @@ void exitPrinting(void)
 
 void endPrinting(void)
 {
-  switch (infoFile.source)
-  {
-    case BOARD_SD:
-      printSetUpdateWaiting(M27_WATCH_OTHER_SOURCES);
-      break;
-
-    case TFT_UDISK:
-    case TFT_SD:
-      f_close(&infoPrinting.file);
-      break;
-  }
   infoPrinting.printing = infoPrinting.pause = false;
   powerFailedClose();
   powerFailedDelete();
@@ -657,21 +527,11 @@ void completePrinting(void)
 
 void abortPrinting(void)
 {
-  switch (infoFile.source)
-  {
-    case BOARD_SD:
-      request_M524();
-      break;
-
-    case TFT_UDISK:
-    case TFT_SD:
-      clearCmdQueue();
-      break;
-  }
+  request_M524();
 
   heatClearIsWaiting();
 
-  mustStoreCmd(CANCEL_PRINT_GCODE);
+  // mustStoreCmd(CANCEL_PRINT_GCODE);
 
   endPrinting();
   exitPrinting();
@@ -747,62 +607,3 @@ void menuShutDown(void)
   }
 }
 
-// get gcode command from sd card
-void getGcodeFromFile(void)
-{
-  bool    sd_comment_mode = false;
-  bool    sd_comment_space = true;
-  char    sd_char;
-  u8      sd_count = 0;
-  UINT    br = 0;
-
-  if(isPrinting()==false || infoFile.source == BOARD_SD)  return;
-
-  powerFailedCache(infoPrinting.file.fptr);
-
-  if(heatHasWaiting() || infoCmd.count || infoPrinting.pause )  return;
-
-  if(moveCacheToCmd() == true) return;
-
-  for(;infoPrinting.cur < infoPrinting.size;)
-  {
-    if(f_read(&infoPrinting.file, &sd_char, 1, &br)!=FR_OK) break;
-
-    infoPrinting.cur++;
-
-    //Gcode
-    if (sd_char == '\n' )         //'\n' is end flag for per command
-    {
-      sd_comment_mode = false;   //for new command
-      sd_comment_space= true;
-      if(sd_count!=0)
-      {
-        infoCmd.queue[infoCmd.index_w].gcode[sd_count++] = '\n';
-        infoCmd.queue[infoCmd.index_w].gcode[sd_count] = 0; //terminate string
-        infoCmd.queue[infoCmd.index_w].src = SERIAL_PORT;
-        sd_count = 0; //clear buffer
-        infoCmd.index_w = (infoCmd.index_w + 1) % CMD_MAX_LIST;
-        infoCmd.count++;
-        break;
-      }
-    }
-    else if (sd_count >= CMD_MAX_CHAR - 2) {	}   //when the command length beyond the maximum, ignore the following bytes
-    else
-    {
-      if (sd_char == ';')             //';' is comment out flag
-        sd_comment_mode = true;
-      else
-      {
-        if(sd_comment_space && (sd_char== 'G'||sd_char == 'M'||sd_char == 'T'))  //ignore ' ' space bytes
-          sd_comment_space = false;
-        if (!sd_comment_mode && !sd_comment_space && sd_char != '\r')  //normal gcode
-          infoCmd.queue[infoCmd.index_w].gcode[sd_count++] = sd_char;
-      }
-    }
-  }
-
-  if((infoPrinting.cur>=infoPrinting.size) && isPrinting())  // end of .gcode file
-  {
-    completePrinting();
-  }
-}
