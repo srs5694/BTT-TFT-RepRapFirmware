@@ -3,23 +3,6 @@
 
 MYFILE infoFile={"?:", {0}, {0}, 0, 0, 0, TFT_SD, {0}};
 
-bool mountFS(void)
-{
-//  resetInfoFile();   //needn't this
-  switch (infoFile.source)
-  {
-    case TFT_SD:
-      return mountSDCard();
-
-    case TFT_UDISK:
-      return mountUDisk();
-
-    case BOARD_SD:
-      return mountGcodeSDCard();
-  }
-  return false;
-}
-
 /*
 */
 void clearInfoFile(void)

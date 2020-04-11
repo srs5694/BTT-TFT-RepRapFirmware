@@ -21,7 +21,6 @@ extern REQUEST_COMMAND_INFO requestCommandInfo;
 
 void clearRequestCommandInfo(void);
 bool RequestCommandInfoIsRunning(void);
-bool request_M21(void);
 char * request_M20(void);
 char * request_M33(char *filename);
 bool request_M25(void);

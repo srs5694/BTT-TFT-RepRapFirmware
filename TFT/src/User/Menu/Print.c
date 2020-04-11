@@ -218,7 +218,7 @@ void menuPrintFromSource(void)
   GUI_Clear(BACKGROUND_COLOR);
   GUI_DispStringInRect(0, 0, LCD_WIDTH, LCD_HEIGHT, textSelect(LABEL_LOADING));
 
-  if (mountFS() == true && scanPrintFiles() == true)
+  if (scanPrintFiles() == true)
   {
     if(list_mode != true){
       menuDrawPage(&printIconItems);

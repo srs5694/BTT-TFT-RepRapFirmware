@@ -26,36 +26,6 @@ void clearRequestCommandInfo(void)
 }
 
 /*
-    Send M21 command and wait for response
-
-    >>> M21
-    SENDING:M21
-    echo:SD card ok
-    echo:SD init fail
-
-*/
-bool request_M21(void)
-{
-  strcpy(requestCommandInfo.command,"M21\n");
-  strcpy(requestCommandInfo.startMagic,"SD");
-  strcpy(requestCommandInfo.stopMagic,"card ok");
-  strcpy(requestCommandInfo.errorMagic,"init fail");
-
-  resetRequestCommandInfo();
-  mustStoreCmd(requestCommandInfo.command);
-  // Wait for response
-  WaitingGcodeResponse = 1;
-  while (!requestCommandInfo.done)
-  {
-    loopProcess();
-  }
-  WaitingGcodeResponse = 0;
-  clearRequestCommandInfo();
-  // Check reponse
-  return !requestCommandInfo.inError;
-}
-
-/*
 SENDING:M20
 Begin file list
 PI3MK2~1.GCO 11081207
@@ -71,9 +41,9 @@ End file list
 */
 char *request_M20(void)
 {
-  strcpy(requestCommandInfo.command,"M20\n");
-  strcpy(requestCommandInfo.startMagic,"Begin file list");
-  strcpy(requestCommandInfo.stopMagic,"End file list");
+  strcpy(requestCommandInfo.command,"M20 S2\n");
+  strcpy(requestCommandInfo.startMagic,"{\"dir\"");
+  strcpy(requestCommandInfo.stopMagic,",\"next\"");
   strcpy(requestCommandInfo.errorMagic,"Error");
   resetRequestCommandInfo();
   mustStoreCmd(requestCommandInfo.command);

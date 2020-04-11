@@ -176,7 +176,7 @@ void menuPowerOff(void)
   GUI_Clear(BACKGROUND_COLOR);
   GUI_DispString((LCD_WIDTH - GUI_StrPixelWidth(textSelect(LABEL_LOADING)))/2, LCD_HEIGHT/2 - BYTE_HEIGHT, textSelect(LABEL_LOADING));
 
-  if(mountFS()==true && powerFailedExist())
+  if(powerFailedExist())
   {
     popupDrawPage(bottomDoubleBtn, textSelect(LABEL_POWER_FAILED), (u8* )infoFile.title, textSelect(LABEL_CONFIRM), textSelect(LABEL_CANNEL));
 

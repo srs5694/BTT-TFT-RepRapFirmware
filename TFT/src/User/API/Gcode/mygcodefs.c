@@ -1,21 +1,6 @@
 #include "mygcodefs.h"
 #include "includes.h"
 
-/*
-*/
-bool mountGcodeSDCard(void)
-{
-  // Send M21 ( Init SD )
-  // wait result
-  // return 0=Error 1=OK
-  /*
->>> M21
-SENDING:M21
-echo:SD card ok
-*/
-  return request_M21();
-}
-
 //static uint32_t date=0;
 //static FILINFO  finfo;
 //static uint16_t len = 0;
@@ -43,49 +28,42 @@ bool scanPrintFilesGcodeFs(void)
   clearRequestCommandInfo();
   char s[3];
 
-  if(strstr(data, "\r\n")) //for smoothieware
-    strcpy(s, "\r\n");
-  else //for Marlin
-    strcpy(s, "\n");
+  strcpy(s, ",");
 
-  char *line = strtok(data, s);
+  data = strtok (data ,"]"); // обрезаем конец
+  char *line = strtok(strchr(data ,'files":[')+1, s);
   for (;line != NULL;line = strtok(NULL, s))
   {
-    if (strcmp(line,"Begin file list") == 0 || strcmp(line,"End file list") == 0 || strcmp(line,"ok") == 0) continue; // Start and Stop tag
-    if (strlen(line) < strlen(infoFile.title)-4) continue; // No path line exclude
+    // if (strcmp(line,"Begin file list") == 0 || strcmp(line,"End file list") == 0 || strcmp(line,"ok") == 0) continue; // Start and Stop tag
+    // if (strlen(line) < strlen(infoFile.title)-4) continue; // No path line exclude
     if (strlen(infoFile.title) > 4 && strstr(line,infoFile.title+4) == NULL) continue; // No current directory
 
-    char *pline = line + strlen(infoFile.title) - 4;
+    char *pline = line + 1 + strlen(infoFile.title) - 4;
     if (strlen(infoFile.title) > 4)pline++;
 
-    if (strchr(pline, '/') == NULL)
+    if (strchr(pline, '*') == NULL)
     {
       // FILE
       if (infoFile.f_num >= FILE_NUM)
         continue; /* Gcode max number is FILE_NUM*/
 
-      char * Pstr_tmp = strrchr (line ,' ');
-      if (Pstr_tmp != NULL) *Pstr_tmp = 0; //remove file size from line
-      char * longfilemane = request_M33(line);
-      Pstr_tmp = strchr (longfilemane ,'\n');
-      if (Pstr_tmp != NULL) *Pstr_tmp = 0; //remove end of M33 command
-      Pstr_tmp = strrchr (longfilemane ,'/'); //remove folder information
-      if (Pstr_tmp == NULL) Pstr_tmp = longfilemane;
+      char * Pstr_tmp = strrchr (line,'"');
+      if (Pstr_tmp != NULL) *Pstr_tmp = 0; //remove правую ковычку
+      Pstr_tmp = strrchr (line ,'"'); //remove начальная ковычка
+      if (Pstr_tmp == NULL) Pstr_tmp = line;
       else Pstr_tmp++;
       infoFile.Longfile[infoFile.f_num]= malloc(strlen(Pstr_tmp) + 1);
-      if (infoFile.Longfile[infoFile.f_num] == NULL)
-      {
-        clearRequestCommandInfo();
-        break;
-      }
+      // if (infoFile.Longfile[infoFile.f_num] == NULL)
+      // {
+      //   clearRequestCommandInfo();
+      //   break;
+      // }
       strcpy(infoFile.Longfile[infoFile.f_num], Pstr_tmp);
-      clearRequestCommandInfo();  // for M33
+      // clearRequestCommandInfo();  // for M33
 
-      char* rest = pline;
-      char* file = strtok_r(rest," ",&rest);   //remove file size from pline
-      infoFile.file[infoFile.f_num] = malloc(strlen(file) + 1);
+      infoFile.file[infoFile.f_num] = malloc(strlen(pline) + 1);
       if (infoFile.file[infoFile.f_num] == NULL) break;
-      strcpy(infoFile.file[infoFile.f_num++], file);
+      strcpy(infoFile.file[infoFile.f_num++], pline);
     }
     else
     {
@@ -93,8 +71,8 @@ bool scanPrintFilesGcodeFs(void)
       if (infoFile.F_num >= FOLDER_NUM)
         continue; /* floder max number is FOLDER_NUM */
 
-      char* rest = pline;
-      char* folder = strtok_r(rest,"/",&rest);
+      char* rest = pline+1;
+      char* folder = strtok_r(rest,"\"",&rest);
 
       bool found = false;
       for(int i=0; i < infoFile.F_num; i++)
