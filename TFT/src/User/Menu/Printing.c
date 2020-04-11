@@ -81,7 +81,6 @@ const ITEM itemIsPause[2] = {
 #endif
 
 static PRINTING infoPrinting;
-static u32     update_time = M27_REFRESH * 1000;
 
 #ifdef ONBOARD_SD_SUPPORT
 static bool    update_waiting = M27_WATCH_OTHER_SOURCES;
@@ -549,27 +548,15 @@ void menuPrinting(void)
       reDrawFan(FAN_ICON_POS);
     }
 
-    //check printing progress
-    if( infoPrinting.size != 0)
+   
+    //check print time change
+    if(time!=infoPrinting.time || infoPrinting.progress!=limitValue(0,(uint64_t)infoPrinting.cur,100))
     {
-      //check print time change
-      if(time!=infoPrinting.time || infoPrinting.progress!=limitValue(0,(uint64_t)infoPrinting.cur*100/infoPrinting.size,100))
-      {
-        time=infoPrinting.time;
-        infoPrinting.progress=limitValue(0,(uint64_t)infoPrinting.cur*100/infoPrinting.size,100);
-        rapid_serial_loop();  //perform backend printing loop before drawing to avoid printer idling
-        reDrawTime(TIM_ICON_POS);
-        reDrawProgress(TIM_ICON_POS);
-      }
-    }
-    else
-    {
-      if(infoPrinting.progress != 100)
-      {
-        infoPrinting.progress = 100;
-        reDrawTime(TIM_ICON_POS);
-        reDrawProgress(TIM_ICON_POS);
-      }
+      time=infoPrinting.time;
+      infoPrinting.progress=limitValue(0,(uint64_t)infoPrinting.cur,100);
+      rapid_serial_loop();  //perform backend printing loop before drawing to avoid printer idling
+      reDrawTime(TIM_ICON_POS);
+      reDrawProgress(TIM_ICON_POS);
     }
 
     //Z_AXIS coordinate

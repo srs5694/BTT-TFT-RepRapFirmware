@@ -246,7 +246,10 @@ void parseACK(void)
       // Example: SD printing byte 123/12345
       // char *ptr;
       // u32 position = strtol(strstr(dmaL2Cache, "byte ")+5, &ptr, 10);
-      // setPrintCur(position);
+      if(ack_seen("fraction_printed\":")) // Parse actual extruder position, response of "M114 E\n", required "M114_DETAIL" in Marlin
+      {
+        setPrintCur(ack_value()*100);
+      }
     }
 #endif
   //parse and store stepper steps/mm values
