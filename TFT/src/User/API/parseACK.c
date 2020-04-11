@@ -74,7 +74,8 @@ static float ack_second_value()
 
 static float ack_third_value()
 {
-  char *secondValue = strchr(&dmaL2Cache[ack_index]+8,','); //TODO +8 жуткий костыль
+  char *secondValue = strchr(&dmaL2Cache[ack_index],','); 
+  secondValue = strchr(secondValue+1,','); //второе вхождение
   if(secondValue != NULL)
   {
     return (strtod(secondValue+1, NULL));
@@ -137,6 +138,40 @@ void parseACK(void)
                            // Avoid can't getting this parameter due to disabled M503 in Marlin
     }
 
+    // Gcode command response
+    if(requestCommandInfo.inWaitResponse && ack_seen(requestCommandInfo.startMagic))
+    {
+      requestCommandInfo.inResponse = true;
+      requestCommandInfo.inWaitResponse = false;
+    }
+    if(requestCommandInfo.inResponse)
+    {
+      if(strlen(requestCommandInfo.cmd_rev_buf)+strlen(dmaL2Cache) < CMD_MAX_REV)
+      {
+        strcat(requestCommandInfo.cmd_rev_buf, dmaL2Cache);
+
+        if(ack_seen(requestCommandInfo.errorMagic ))
+        {
+          requestCommandInfo.done = true;
+          requestCommandInfo.inResponse = false;
+          requestCommandInfo.inError = true;
+        }
+        else if(ack_seen(requestCommandInfo.stopMagic ))
+        {
+          requestCommandInfo.done = true;
+          requestCommandInfo.inResponse = false;
+        }
+      }
+      else
+      {
+        requestCommandInfo.done = true;
+        requestCommandInfo.inResponse = false;
+        ackPopupInfo(errormagic);
+      }
+      infoHost.wait = false;
+      goto parse_end;
+    }
+    // end
 
     if(ack_seen("status"))
     {
