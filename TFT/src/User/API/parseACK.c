@@ -241,16 +241,16 @@ void parseACK(void)
     }
     else if(ack_seen("status\":\"P"))
     {
+      if (isPause()) setPause(false);
+
+      setPrinting(true);
+
       if(infoMenu.menu[infoMenu.cur] != menuPrinting && !infoHost.printing) {
         infoMenu.menu[++infoMenu.cur] = menuPrinting;
         infoHost.printing=true;
         storeCmd("M409 K\"job\"\n");
       }
 
-      if (isPause()) setPause(false);
-
-      setPrinting(true);
-      
       if(ack_seen("fraction_printed\":")) // Parse actual extruder position, response of "M114 E\n", required "M114_DETAIL" in Marlin
       {
         setPrintCur(ack_value()*100);

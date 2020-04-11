@@ -83,6 +83,10 @@ bool isPrinting(void)
 void setPrinting(bool print)
 {
   infoPrinting.printing = print;
+  printingItems.items[KEY_ICON_7].icon = ICON_STOP;
+  printingItems.items[KEY_ICON_7].label.index = LABEL_STOP;
+  // if (infoMenu.menu[infoMenu.cur] == menuPrinting)
+  //   menuDrawItem(&printingItems.items[KEY_ICON_7], KEY_ICON_7);
 }
 
 void setPause(bool is_pause)
