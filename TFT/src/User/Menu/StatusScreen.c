@@ -344,7 +344,9 @@ void menuStatus(void)
         infoMenu.menu[++infoMenu.cur] = menuMain;
         break;
       case KEY_ICON_7:
-        infoMenu.menu[++infoMenu.cur] = menuPrint;
+        infoFile.source = BOARD_SD;
+        infoMenu.menu[++infoMenu.cur] = menuPrintFromSource;
+        resetInfoFile();
         break;
 
       default:break;

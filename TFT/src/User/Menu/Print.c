@@ -261,33 +261,3 @@ LABEL_PRINT,
   {ICON_BACKGROUND,           LABEL_BACKGROUND},
   {ICON_BACK,                 LABEL_BACK},}
 };
-
-void menuPrint(void)
-{
-  KEY_VALUES  key_num = KEY_IDLE;
-
-  menuDrawPage(&sourceSelItems);
-  while(infoMenu.menu[infoMenu.cur] == menuPrint)
-  {
-    key_num = menuKeyGetValue();
-    switch(key_num)
-    {
-      case KEY_ICON_0:
-        infoFile.source = BOARD_SD;
-        infoMenu.menu[++infoMenu.cur] = menuPrintFromSource;   //TODO: fix here,  onboard sd card PLR feature
-        goto selectEnd;
-
-
-      case KEY_ICON_7:
-        infoMenu.cur--;
-        return;
-
-      default: break;
-    }
-    loopProcess();
-  }
-
-selectEnd:
-  resetInfoFile();
-  powerFailedSetDriverSource(getCurFileSource());
-}
