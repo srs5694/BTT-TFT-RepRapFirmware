@@ -67,7 +67,6 @@ typedef enum
   SKEY_STARTGCODE,
   SKEY_ENDGCODE,
   SKEY_PERSISTENTINFO,
-  SKEY_FILELIST,
   #ifdef LED_COLOR_PIN
     SKEY_KNOB,
   #endif
@@ -105,7 +104,6 @@ LISTITEM settingPage[SKEY_COUNT] = {
   {ICONCHAR_TOGGLE_ON,  LIST_TOGGLE,        LABEL_SEND_START_GCODE,         LABEL_BACKGROUND  },
   {ICONCHAR_TOGGLE_ON,  LIST_TOGGLE,        LABEL_SEND_END_GCODE,           LABEL_BACKGROUND  },
   {ICONCHAR_TOGGLE_ON,  LIST_TOGGLE,        LABEL_PERSISTENT_STATUS_INFO,   LABEL_BACKGROUND  },
-  {ICONCHAR_TOGGLE_ON,  LIST_TOGGLE,        LABEL_FILE_LISTMODE,            LABEL_BACKGROUND  },
   #ifdef LED_COLOR_PIN
     {ICONCHAR_BLANK,      LIST_CUSTOMVALUE,   LABEL_KNOB_LED,                 LABEL_OFF         },
   #endif
@@ -236,14 +234,6 @@ void updateFeatureSettings(uint8_t key_val)
       menuDrawListItem(&featureSettingsItems.items[key_val], key_val);
       break;
 
-    case SKEY_FILELIST:
-      infoSettings.file_listmode = (infoSettings.file_listmode + 1) % TOGGLE_NUM;
-      settingPage[item_index].icon = toggleitem[infoSettings.file_listmode];
-      featureSettingsItems.items[key_val] = settingPage[item_index];
-
-      menuDrawListItem(&featureSettingsItems.items[key_val], key_val);
-      break;
-
     #ifdef LED_COLOR_PIN
       case SKEY_KNOB:
         infoSettings.knob_led_color = (infoSettings.knob_led_color + 1 ) % LED_color_NUM;
@@ -366,10 +356,6 @@ void loadFeatureSettings(){
         featureSettingsItems.items[i] = settingPage[item_index];
         break;
 
-      case SKEY_FILELIST:
-        settingPage[item_index].icon  = toggleitem[infoSettings.file_listmode];
-        featureSettingsItems.items[i] = settingPage[item_index];
-        break;
       case SKEY_RESET_SETTINGS:
         featureSettingsItems.items[i] = settingPage[item_index];
         break;

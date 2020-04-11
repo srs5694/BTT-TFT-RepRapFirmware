@@ -16,25 +16,8 @@
     {ICONCHAR_BACK,       LIST_LABEL, LABEL_BACKGROUND, LABEL_BACKGROUND},}
   };
 
-  MENUITEMS printIconItems = {
-    //  title
-    LABEL_BACKGROUND,
-    // icon                       label
-    {
-      {ICON_BACKGROUND,           LABEL_BACKGROUND},
-      {ICON_BACKGROUND,           LABEL_BACKGROUND},
-      {ICON_BACKGROUND,           LABEL_BACKGROUND},
-      {ICON_BACKGROUND,           LABEL_BACKGROUND},
-      {ICON_BACKGROUND,           LABEL_BACKGROUND},
-      {ICON_PAGE_UP,              LABEL_PAGE_UP},
-      {ICON_PAGE_DOWN,            LABEL_PAGE_DOWN},
-      {ICON_BACK,                 LABEL_BACK},
-    }
-  };
-
 // File list number per page
 #define NUM_PER_PAGE	5
-static bool list_mode = true;
 SCROLL   titleScroll;
 const GUI_RECT titleRect={10, (TITLE_END_Y - BYTE_HEIGHT) / 2, LCD_WIDTH-10, (TITLE_END_Y - BYTE_HEIGHT) / 2 + BYTE_HEIGHT};
 
@@ -93,43 +76,7 @@ bool get_Pre_Icon(void)
 }
 
 
-void gocdeIconDraw(void)
-{
-  u8 i=0;//k = 0;
-  int gn;
-  char *gnew;
-  ITEM curItem = {ICON_BACKGROUND, LABEL_BACKGROUND};
 
-  scrollFileNameCreate(0);
-  Scroll_CreatePara(&titleScroll, (uint8_t* )infoFile.title, &titleRect);
-  printIconItems.title.address = (uint8_t* )infoFile.title;
-  GUI_SetBkColor(TITLE_BACKGROUND_COLOR);
-  GUI_ClearPrect(&titleRect);
-  GUI_SetBkColor(BACKGROUND_COLOR);
-
-  //draw folders
-  for(i=0;(i + infoFile.cur_page * NUM_PER_PAGE < infoFile.F_num) && (i < NUM_PER_PAGE) ; i++)                  // folder
-  {
-    curItem.icon = ICON_FOLDER;
-    menuDrawItem(&curItem, i);
-    normalNameDisp(&gcodeRect[i], (u8* )infoFile.folder[i + infoFile.cur_page * NUM_PER_PAGE]);
-  }
-
-  //draw files
-  for( ;(i + infoFile.cur_page * NUM_PER_PAGE < infoFile.f_num + infoFile.F_num) && (i < NUM_PER_PAGE) ;i++)  // gcode file
-  {
-    curItem.icon = ICON_FILE;
-    menuDrawItem(&curItem, i);
-    normalNameDisp(&gcodeRect[i], (u8* )infoFile.Longfile[i + infoFile.cur_page * NUM_PER_PAGE - infoFile.F_num]);
-  }
-
-  //clear blank icons
-  for(; (i<NUM_PER_PAGE); i++)
-  {
-    curItem.icon = ICON_BACKGROUND;
-    menuDrawItem(&curItem, i);
-  }
-}
 
 void gocdeListDraw(void)
 {
@@ -204,14 +151,8 @@ void menuPrintFromSource(void)
 
   if (scanPrintFiles() == true)
   {
-    if(list_mode != true){
-      menuDrawPage(&printIconItems);
-      gocdeIconDraw();
-    }
-    else{
-      menuDrawListPage(&printListItems);
-      gocdeListDraw();
-    }
+    menuDrawListPage(&printListItems);
+    gocdeListDraw();
   }
   else
   {
@@ -225,10 +166,6 @@ void menuPrintFromSource(void)
     GUI_SetBkColor(TITLE_BACKGROUND_COLOR);
     Scroll_DispString(&titleScroll, LEFT);    //
     GUI_SetBkColor(BACKGROUND_COLOR);
-
-    if(list_mode != true){
-      Scroll_DispString(&gcodeScroll, CENTER); //
-    }
 
     key_num = menuKeyGetValue();
 
@@ -289,16 +226,6 @@ void menuPrintFromSource(void)
           }
         }
 
-        else if(key_num >=KEY_LABEL_0 && key_num <= KEY_LABEL_4)
-        {
-          if(list_mode != true){
-            if(key_num - KEY_LABEL_0 + infoFile.cur_page * NUM_PER_PAGE < infoFile.F_num + infoFile.f_num)
-            {
-              normalNameDisp(gcodeScroll.rect, gcodeScroll.text);
-              scrollFileNameCreate(key_num - KEY_LABEL_0);
-            }
-          }
-        }
         break;
     }
 
@@ -306,12 +233,7 @@ void menuPrintFromSource(void)
     {
       update=0;
 
-      if(list_mode != true){
-        gocdeIconDraw();
-      }
-      else{
-        gocdeListDraw();
-      }
+      gocdeListDraw();
     }
 
     #ifdef SD_CD_PIN
@@ -351,7 +273,6 @@ void menuPrint(void)
     switch(key_num)
     {
       case KEY_ICON_0:
-        list_mode = true; //force list mode in Onboard sd casd
         infoFile.source = BOARD_SD;
         infoMenu.menu[++infoMenu.cur] = menuPrintFromSource;   //TODO: fix here,  onboard sd card PLR feature
         goto selectEnd;
