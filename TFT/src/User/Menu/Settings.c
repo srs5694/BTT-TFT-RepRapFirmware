@@ -64,7 +64,8 @@ void setupMachine(void){
 void menuInfo(void)
 {
   const char* hardware = "Board   : BIGTREETECH_" HARDWARE_VERSION;
-  const char* firmware = "Firmware: "HARDWARE_VERSION"." STRINGIFY(SOFTWARE_VERSION) " " __DATE__;
+  const char* firmware = "Firmware: " STRINGIFY(SOFTWARE_VERSION) " " __DATE__;
+  const char* author   = "Author  : BCmob";
 
   u16 HW_X = (LCD_WIDTH - GUI_StrPixelWidth((u8 *)hardware))/2;
   u16 FW_X = (LCD_WIDTH - GUI_StrPixelWidth((u8 *)firmware))/2;
@@ -75,6 +76,7 @@ void menuInfo(void)
 
   GUI_DispString(startX, centerY - BYTE_HEIGHT, (u8 *)hardware);
   GUI_DispString(startX, centerY, (u8 *)firmware);
+  GUI_DispString(startX, centerY + BYTE_HEIGHT, (u8 *)author);
   GUI_DispStringInRect(20, LCD_HEIGHT - (BYTE_HEIGHT*2), LCD_WIDTH-20, LCD_HEIGHT, textSelect(LABEL_TOUCH_TO_EXIT));
 
   while(!isPress()) loopProcess();
