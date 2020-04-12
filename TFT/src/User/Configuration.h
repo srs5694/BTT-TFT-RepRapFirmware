@@ -277,7 +277,7 @@
 #define CUSTOM_0_LABEL "Disable Steppers"
 #define CUSTOM_0_GCODE "M84\n"
 #define CUSTOM_1_LABEL "IP"
-#define CUSTOM_1_GCODE "M409 K\"network\"\n"
+#define CUSTOM_1_GCODE "M409 K\"network.interfaces[0].actualIP\"\n"
 #define CUSTOM_2_LABEL "M409 Kjob"
 #define CUSTOM_2_GCODE "M409 K\"job\"\n"
 #define CUSTOM_3_LABEL "Enable Leveling State"

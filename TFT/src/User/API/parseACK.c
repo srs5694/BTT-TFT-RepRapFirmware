@@ -90,14 +90,16 @@ void ackPopupInfo(const char *info)
 {
   if(infoMenu.menu[infoMenu.cur] == menuParameterSettings) return;
 
+  char *t = strtok(&dmaL2Cache[ack_index],"\"");
+
   if (info == echomagic)
   {
-    statusScreen_setMsg((u8 *)info, strtok ((u8 *)dmaL2Cache + ack_index ,"\""));
+    statusScreen_setMsg((u8*)info,(u8*)t);
   }
   if (infoMenu.menu[infoMenu.cur] == menuTerminal) return;
   if (infoMenu.menu[infoMenu.cur] == menuStatus && info == echomagic) return;
 
-  popupReminder((u8* )info, strtok ((u8 *)dmaL2Cache + ack_index ,"\""));
+  popupReminder((u8*)info,(u8*)t);
 }
 
 bool dmaL1NotEmpty(uint8_t port)
@@ -131,7 +133,7 @@ void parseACK(void)
       // if(!ack_seen("beep_freq") || !ack_seen("message") || !ack_seen("status"))  goto parse_end;  //the first response should be such as "T:25/50 ok\n"
       updateNextHeatCheckTime();
       infoHost.connected = true;
-      storeCmd("M409 K\"network\"\n"); //RRF3
+      storeCmd("M409 K\"network.interfaces[0].actualIP\"\n"); //RRF3
       // storeCmd("M115\n");
       // storeCmd("M503 S0\n");
       // storeCmd("M92\n"); // Steps/mm of extruder is an important parameter for Smart filament runout
@@ -176,7 +178,7 @@ void parseACK(void)
     if(ack_seen("status"))
     {
       infoHost.wait = false;
-  //parse temperature
+      //parse temperature
       if(ack_seen("heaters\":["))
       {
         // TOOL i = heatGetCurrentToolNozzle();
@@ -225,14 +227,19 @@ void parseACK(void)
       }
     }
 
-    if(ack_seen("Count E:")) // Parse actual extruder position, response of "M114 E\n", required "M114_DETAIL" in Marlin
-    {
-      coordinateSetAxisActualSteps(E_AXIS, ack_value());
-    }
-    else if(infoHost.printing && ack_seen("status\":\"I"))
+    // if(ack_seen("Count E:")) // Parse actual extruder position, response of "M114 E\n", required "M114_DETAIL" in Marlin
+    // {
+    //   coordinateSetAxisActualSteps(E_AXIS, ack_value());
+    // }
+    if(infoHost.printing && ack_seen("status\":\"I"))
     {
       infoHost.printing = false;
       completePrinting();
+    }
+    // busy (e.g. running a macro)
+    else if(infoHost.printing && ack_seen("status\":\"B"))
+    {
+      
     }
     // on PAUSE
     else if(infoHost.printing && ack_seen("status\":\"A"))
@@ -248,7 +255,7 @@ void parseACK(void)
       if(infoMenu.menu[infoMenu.cur] != menuPrinting && !infoHost.printing) {
         infoMenu.menu[++infoMenu.cur] = menuPrinting;
         infoHost.printing=true;
-        storeCmd("M409 K\"job\"\n");
+        storeCmd("M409 K\"job.file\"\n");
       }
 
       if(ack_seen("fraction_printed\":"))
@@ -262,92 +269,103 @@ void parseACK(void)
       }
 
     }
-  // Parse M115 capability report
-    else if(ack_seen("Cap:AUTOREPORT_TEMP:"))
-    {
-      infoMachineSettings.autoReportTemp = ack_value();
-    }
-    else if(ack_seen("Cap:AUTOLEVEL:"))
-    {
-      infoMachineSettings.autoLevel = ack_value();
-    }
-    else if(ack_seen("Cap:Z_PROBE:"))
-    {
-      infoMachineSettings.zProbe = ack_value();
-    }
-    else if(ack_seen("Cap:LEVELING_DATA:"))
-    {
-      infoMachineSettings.levelingData = ack_value();
-    }
-    else if(ack_seen("Cap:SOFTWARE_POWER:"))
-    {
-      infoMachineSettings.softwarePower = ack_value();
-    }
-    else if(ack_seen("Cap:TOGGLE_LIGHTS:"))
-    {
-      infoMachineSettings.toggleLights = ack_value();
-    }
-    else if(ack_seen("Cap:CASE_LIGHT_BRIGHTNESS:"))
-    {
-      infoMachineSettings.caseLightsBrightness = ack_value();
-    }
-    else if(ack_seen("Cap:EMERGENCY_PARSER:"))
-    {
-      infoMachineSettings.emergencyParser = ack_value();
-    }
-    else if(ack_seen("Cap:AUTOREPORT_SD_STATUS:"))
-    {
-      infoMachineSettings.autoReportSDStatus = ack_value();
-    }
-    else if(ack_seen("Cap:CHAMBER_TEMPERATURE:"))
-    {
-      setupMachine();
-    }
-  //parse Repeatability Test
-    else if(ack_seen("Mean:"))
-    {
-      popupReminder((u8* )"Repeatability Test", (u8 *)dmaL2Cache + ack_index-5);
-    }
-    else if(ack_seen("Probe Offset"))
-    {
-      if(ack_seen("Z"))
-      {
-        setParameter(P_PROBE_OFFSET,Z_STEPPER, ack_value());
-      }
-    }
-    
-  //Parse error messages & Echo messages
-    else if(ack_seen(errormagic))
-    {
-      BUZZER_PLAY(sound_error);
+    // Parse M115 capability report
+    // else if(ack_seen("Cap:AUTOREPORT_TEMP:"))
+    // {
+    //   infoMachineSettings.autoReportTemp = ack_value();
+    // }
+    // else if(ack_seen("Cap:AUTOLEVEL:"))
+    // {
+    //   infoMachineSettings.autoLevel = ack_value();
+    // }
+    // else if(ack_seen("Cap:Z_PROBE:"))
+    // {
+    //   infoMachineSettings.zProbe = ack_value();
+    // }
+    // else if(ack_seen("Cap:LEVELING_DATA:"))
+    // {
+    //   infoMachineSettings.levelingData = ack_value();
+    // }
+    // else if(ack_seen("Cap:SOFTWARE_POWER:"))
+    // {
+    //   infoMachineSettings.softwarePower = ack_value();
+    // }
+    // else if(ack_seen("Cap:TOGGLE_LIGHTS:"))
+    // {
+    //   infoMachineSettings.toggleLights = ack_value();
+    // }
+    // else if(ack_seen("Cap:CASE_LIGHT_BRIGHTNESS:"))
+    // {
+    //   infoMachineSettings.caseLightsBrightness = ack_value();
+    // }
+    // else if(ack_seen("Cap:EMERGENCY_PARSER:"))
+    // {
+    //   infoMachineSettings.emergencyParser = ack_value();
+    // }
+    // else if(ack_seen("Cap:AUTOREPORT_SD_STATUS:"))
+    // {
+    //   infoMachineSettings.autoReportSDStatus = ack_value();
+    // }
+    // else if(ack_seen("Cap:CHAMBER_TEMPERATURE:"))
+    // {
+    //   setupMachine();
+    // }
 
-      ackPopupInfo(errormagic);
-    }
-    else if(ack_seen(echomagic))
-    {
-      for(u8 i = 0; i < COUNT(ignoreEcho); i++)
-      {
-        if(strstr(dmaL2Cache, ignoreEcho[i]))
-        {
-          busyIndicator(STATUS_BUSY);
-          goto parse_end;
-        }
-      }
-      BUZZER_PLAY(sound_notify);
-      ackPopupInfo(echomagic);
-    }
+    //parse Repeatability Test
+    // else if(ack_seen("Mean:"))
+    // {
+    //   popupReminder((u8* )"Repeatability Test", (u8 *)dmaL2Cache + ack_index-5);
+    // }
+    // else if(ack_seen("Probe Offset"))
+    // {
+    //   if(ack_seen("Z"))
+    //   {
+    //     setParameter(P_PROBE_OFFSET,Z_STEPPER, ack_value());
+    //   }
+    // }
+    
+    //Parse error messages & Echo messages
+    // else if(ack_seen(errormagic))
+    // {
+    //   BUZZER_PLAY(sound_error);
+
+    //   ackPopupInfo(errormagic);
+    // }
+    // else if(ack_seen(echomagic))
+    // {
+    //   for(u8 i = 0; i < COUNT(ignoreEcho); i++)
+    //   {
+    //     if(strstr(dmaL2Cache, ignoreEcho[i]))
+    //     {
+    //       busyIndicator(STATUS_BUSY);
+    //       goto parse_end;
+    //     }
+    //   }
+    //   BUZZER_PLAY(sound_notify);
+    //   ackPopupInfo(echomagic);
+    // }
     else if(ack_seen("message\":\""))
     {
       BUZZER_PLAY(sound_notify);
       ackPopupInfo(echomagic);
     }
-    else if(ack_seen("actualIP\":\""))
+    // ответ от M409 K"network.interfaces[0]"
+    else if(ack_seen("network.interfaces[0].actualIP") && ack_seen("result\":\""))
     {
-      BUZZER_PLAY(sound_notify);
-      ackPopupInfo(echomagic);
+      char *t = strtok(&dmaL2Cache[ack_index],"\"");
+      if (strcmp(t, "0.0.0.0") ==0)
+      {
+        statusScreen_setMsg((u8*)echomagic,"Connecting...");
+        storeCmd("M409 K\"network.interfaces[0].actualIP\"\n"); //  перезапрашиваем до установления связи
+      }
+      else
+      {
+        BUZZER_PLAY(sound_notify);
+        ackPopupInfo(echomagic);
+      }
     }
-    // ответ от M409 K"job"
-    else if(ack_seen("lastFileName\":\""))
+    // ответ от M409 K"job.file"
+    else if(ack_seen("job.file") && ack_seen("fileName\":\""))
     {
       // BUZZER_PLAY(sound_notify);
       // ackPopupInfo(echomagic);
@@ -363,10 +381,8 @@ void parseACK(void)
       {
         Buzzer_TurnOn(freq,ack_value());
       }
-
     }
     
-
   parse_end:
     if(ack_cur_src != SERIAL_PORT)
     {
