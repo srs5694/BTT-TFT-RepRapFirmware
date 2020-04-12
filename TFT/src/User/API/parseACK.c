@@ -178,6 +178,7 @@ void parseACK(void)
     if(ack_seen("status"))
     {
       infoHost.wait = false;
+      avoid_terminal = infoSettings.terminalACK;
       //parse temperature
       if(ack_seen("heaters\":["))
       {
@@ -196,8 +197,7 @@ void parseACK(void)
         if(!heatGetSendWaiting(ii)) {
           heatSyncTargetTemp(ii, ack_second_value()+0.5);
         }
-
-        avoid_terminal = infoSettings.terminalACK;
+        
         updateNextHeatCheckTime();
       }
 

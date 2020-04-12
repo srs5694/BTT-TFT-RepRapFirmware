@@ -22,6 +22,8 @@ void endPrinting(void);
 void completePrinting(void);
 void abortPrinting(void);
 
+void resumeToPause(bool is_pause);
+
 void setM0Pause(bool m0_pause);
 bool setPrintPause(bool is_pause,bool is_m0pause);
 
