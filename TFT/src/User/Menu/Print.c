@@ -222,7 +222,7 @@ void menuPrintFromSource(void)
             if(infoHost.connected !=true) break;
             if(EnterDir(infoFile.file[key_num + start - infoFile.F_num]) == false) break;
 
-            infoMenu.menu[++infoMenu.cur] = menuBeforePrinting;
+            infoMenu.menu[++infoMenu.cur] = menuStartPrinting;
           }
         }
 

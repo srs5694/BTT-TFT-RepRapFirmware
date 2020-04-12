@@ -115,7 +115,7 @@
 /**
  *  Show bootscreen when starting up
  */
-#define SHOW_BTT_BOOTSCREEN
+// #define SHOW_BTT_BOOTSCREEN
 
 /**
  * The duration and frequency for the UI feedback sound.

@@ -565,6 +565,33 @@ void menuStopPrinting(void)
   }
 }
 
+void menuStartPrinting(void)
+{
+  u16 key_num = IDLE_TOUCH;
+
+  char buf[89];
+  sprintf(buf, "Do you want to start %.65s?\n", infoFile.title+4);
+
+  popupDrawPage(bottomDoubleBtn, textSelect(LABEL_INFO), (u8*)buf, textSelect(LABEL_CONFIRM), textSelect(LABEL_CANNEL));
+
+  while(infoMenu.menu[infoMenu.cur] == menuStartPrinting)
+  {
+    key_num = KEY_GetValue(2, doubleBtnRect);
+    switch(key_num)
+    {
+      case KEY_POPUP_CONFIRM:
+        infoMenu.menu[infoMenu.cur] = menuBeforePrinting;
+        break;
+
+      case KEY_POPUP_CANCEL:
+        ExitDir();
+        infoMenu.cur--;
+        break;
+    }
+    loopProcess();
+  }
+}
+
 // Shut down menu, when the hotend temperature is higher than "AUTO_SHUT_DOWN_MAXTEMP"
 // wait for cool down, in the meantime, you can shut down by force
 void menuShutDown(void)

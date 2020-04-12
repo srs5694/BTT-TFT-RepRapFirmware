@@ -43,6 +43,7 @@ u32  getPrintTime(void);
 void menuBeforePrinting(void);
 void menuPrinting(void);
 void menuStopPrinting(void);
+void menuStartPrinting(void);
 void menuShutDown(void);
 
 void printingDrawPage(void);
