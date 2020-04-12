@@ -55,7 +55,7 @@ const char * const softKeyValue[][26] = {
     "A", "B", "C", "D", "F", "Del",
     "H", "I", "J", "K", "L", "Space",
     "N", "O", "P", "Q", "R", "123",
-    "U", "V", "W", " ", " ", " ",
+    "U", "V", "W", "\"", "_", " ",
     "Back", "Send",
   }
 };
