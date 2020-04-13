@@ -375,6 +375,7 @@ void parseACK(void)
 
     }
     // beep buzzer
+    #ifdef BUZZER_PIN
     else if(ack_seen("beep_freq\":"))
     {
       uint32_t freq = ack_value();
@@ -383,7 +384,8 @@ void parseACK(void)
         Buzzer_TurnOn(freq,ack_value());
       }
     }
-    
+     #endif
+
   parse_end:
     if(ack_cur_src != SERIAL_PORT)
     {
