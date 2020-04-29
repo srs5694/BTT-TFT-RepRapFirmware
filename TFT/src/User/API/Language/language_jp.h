@@ -20,6 +20,7 @@
     #define JP_GCODE                "Gcode"
     #define JP_CUSTOM               "Custom"
     #define JP_LEVELING             "Leveling"
+    #define JP_POINT_CENTER         "Point 0"
     #define JP_POINT_1              "Point 1"
     #define JP_POINT_2              "Point 2"
     #define JP_POINT_3              "Point 3"

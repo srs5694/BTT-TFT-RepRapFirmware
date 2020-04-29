@@ -20,6 +20,7 @@
     #define DU_GCODE                "Gcode"
     #define DU_CUSTOM               "Aangepast"
     #define DU_LEVELING             "Nivelleren"
+    #define DU_POINT_CENTER         "Punt 0"
     #define DU_POINT_1              "Punt 1"
     #define DU_POINT_2              "Punt 2"
     #define DU_POINT_3              "Punt 3"

@@ -20,6 +20,7 @@
     #define FR_GCODE                "Gcode"
     #define FR_CUSTOM               "Custom"
     #define FR_LEVELING             "Niveaux"
+    #define FR_POINT_CENTER         "Point 0"
     #define FR_POINT_1              "Point 1"
     #define FR_POINT_2              "Point 2"
     #define FR_POINT_3              "Point 3"

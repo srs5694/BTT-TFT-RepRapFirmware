@@ -20,6 +20,7 @@
     #define AM_GCODE                "Gcode"
     #define AM_CUSTOM               "Custom"
     #define AM_LEVELING             "Leveling"
+    #define AM_POINT_CENTER         "Point 0"
     #define AM_POINT_1              "Point 1"
     #define AM_POINT_2              "Point 2"
     #define AM_POINT_3              "Point 3"

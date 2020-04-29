@@ -20,6 +20,7 @@
     #define IT_GCODE                "Gcode"
     #define IT_CUSTOM               "Custom"
     #define IT_LEVELING             "Livella"
+    #define IT_POINT_CENTER         "Punto 0"
     #define IT_POINT_1              "Punto 1"
     #define IT_POINT_2              "Punto 2"
     #define IT_POINT_3              "Punto 3"

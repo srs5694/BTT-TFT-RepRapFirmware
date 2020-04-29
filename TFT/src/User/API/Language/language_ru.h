@@ -20,6 +20,7 @@
     #define RU_GCODE                  "G-коды"
     #define RU_CUSTOM                 "Своё меню"
     #define RU_LEVELING               "Равнение"
+    #define RU_POINT_CENTER           "Точка 0"
     #define RU_POINT_1                "Точка 1"
     #define RU_POINT_2                "Точка 2"
     #define RU_POINT_3                "Точка 3"

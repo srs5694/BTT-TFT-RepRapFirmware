@@ -20,6 +20,7 @@
     #define PL_GCODE                "Gcode"
     #define PL_CUSTOM               "Własne"
     #define PL_LEVELING             "Poziomowanie"
+    #define PL_POINT_CENTER         "Punkt 0"
     #define PL_POINT_1              "Punkt 1"
     #define PL_POINT_2              "Punkt 2"
     #define PL_POINT_3              "Punkt 3"

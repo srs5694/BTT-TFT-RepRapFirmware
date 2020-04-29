@@ -20,6 +20,7 @@
     #define ES_GCODE                "Gcode"
     #define ES_CUSTOM               "Personalizar"
     #define ES_LEVELING             "Nivelar"
+    #define ES_POINT_CENTER         "Punto 0"
     #define ES_POINT_1              "Punto 1"
     #define ES_POINT_2              "Punto 2"
     #define ES_POINT_3              "Punto 3"

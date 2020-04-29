@@ -20,6 +20,7 @@
     #define CN_GCODE                "Gcode"
     #define CN_CUSTOM               "自定义"
     #define CN_LEVELING             "调平"
+    #define CN_POINT_CENTER         "零点"
     #define CN_POINT_1              "第一点"
     #define CN_POINT_2              "第二点"
     #define CN_POINT_3              "第三点"

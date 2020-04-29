@@ -20,6 +20,7 @@
     #define DE_GCODE                "Gcode"
     #define DE_CUSTOM               "Extras"
     #define DE_LEVELING             "Leveling"
+    #define DE_POINT_CENTER         "Punkt 0"
     #define DE_POINT_1              "Punkt 1"
     #define DE_POINT_2              "Punkt 2"
     #define DE_POINT_3              "Punkt 3"

@@ -20,6 +20,7 @@
     #define CZ_GCODE                "Gcode"
     #define CZ_CUSTOM               "Vlastní"
     #define CZ_LEVELING             "Vyrovnat"
+    #define CZ_POINT_CENTER         "Bod 0"
     #define CZ_POINT_1              "Bod 1"
     #define CZ_POINT_2              "Bod 2"
     #define CZ_POINT_3              "Bod 3"

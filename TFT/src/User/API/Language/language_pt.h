@@ -20,6 +20,7 @@
     #define PT_GCODE                "Gcode"
     #define PT_CUSTOM               "Custom"
     #define PT_LEVELING             "Nivelar"
+    #define PT_POINT_CENTER         "Ponto 0"
     #define PT_POINT_1              "Ponto 1"
     #define PT_POINT_2              "Ponto 2"
     #define PT_POINT_3              "Ponto 3"

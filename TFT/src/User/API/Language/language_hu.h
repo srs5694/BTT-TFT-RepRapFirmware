@@ -20,6 +20,7 @@
     #define HU_GCODE                "G-Kód"
     #define HU_CUSTOM               "Egyedi"
     #define HU_LEVELING             "Szintezés"
+    #define HU_POINT_CENTER              "0. pont"
     #define HU_POINT_1              "1. pont"
     #define HU_POINT_2              "2. pont"
     #define HU_POINT_3              "3. pont"

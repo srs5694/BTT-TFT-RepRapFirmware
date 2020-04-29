@@ -20,6 +20,7 @@
     #define SK_GCODE                "Gcode"
     #define SK_CUSTOM               "Vlastné"
     #define SK_LEVELING             "Vyrovnanie"
+    #define SK_POINT_CENTER         "Bod 0"
     #define SK_POINT_1              "Bod 1"
     #define SK_POINT_2              "Bod 2"
     #define SK_POINT_3              "Bod 3"
