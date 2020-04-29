@@ -10,7 +10,6 @@ const char *const ignoreEcho[] = {
   "busy: processing",
   "Now fresh file:",
   "Probe Z Offset:",
-  "paused for user",
   "Flow:",
   "echo:;",
   "echo:  G",

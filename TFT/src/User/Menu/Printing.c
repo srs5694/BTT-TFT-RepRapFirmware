@@ -251,7 +251,7 @@ void reDrawFan(int icon_pos)
     fs = (fanGetSpeed(c_fan)*100)/255;
     my_sprintf(tempstr, "%d%%", fs);
   #else
-    fs = fanSpeed[curIndex];
+    fs = fanGetSpeed(c_fan);
     my_sprintf(tempstr, "%d", fs);
   #endif
 
@@ -546,7 +546,9 @@ void abortPrinting(void)
 
   heatClearIsWaiting();
 
-  // mustStoreCmd(CANCEL_PRINT_GCODE);
+  if(infoSettings.send_cancel_gcode == 1){
+    mustStoreCmd(PRINT_CANCEL_GCODE);
+  }
 
   endPrinting();
   exitPrinting();
