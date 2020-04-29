@@ -208,6 +208,18 @@ void parseACK(void)
         storegantry(2, ack_third_value());
       }
 
+      if(ack_seen("homed\":["))
+      {
+        if (ack_value() != 0 && ack_second_value() != 0 && ack_third_value() != 0) 
+        {
+          coordinateSetKnown(true);
+        }
+        else 
+        {
+          coordinateSetKnown(false);
+        }
+      }
+
       // parse and store feed rate percentage
       if(ack_seen("sfactor\":"))
       {
