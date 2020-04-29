@@ -518,6 +518,16 @@ void endPrinting(void)
 void completePrinting(void)
 {
   BUZZER_PLAY(sound_success);
+
+  u8  hour = infoPrinting.time/3600,
+      min = infoPrinting.time%3600/60,
+      sec = infoPrinting.time%60;
+
+  char tempstr[25];
+  sprintf(tempstr, "Print time was %02d:%02d:%02d", hour,min,sec);
+  statusScreen_setMsg((u8*)"Complete",(u8*)tempstr);
+  popupReminder((u8*)"Complete",(u8*)tempstr);
+
   endPrinting();
   printingItems.items[KEY_ICON_7].icon = ICON_BACK;
   printingItems.items[KEY_ICON_7].label.index = LABEL_BACK;
@@ -527,6 +537,7 @@ void completePrinting(void)
   {
 		infoMenu.menu[++infoMenu.cur] = menuShutDown;
   }
+  
 }
 
 void abortPrinting(void)
