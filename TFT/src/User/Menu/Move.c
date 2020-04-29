@@ -182,7 +182,7 @@ void update_gantry(void)
   if (OS_GetTimeMs() > nextTime)
   {
     if (infoHost.connected == true && infoHost.wait == false){
-      storeCmd("M408 S2\n");
+      storeCmd("M408 S4\n");
     }
     drawXYZ();
     nextTime = OS_GetTimeMs() + update_time;

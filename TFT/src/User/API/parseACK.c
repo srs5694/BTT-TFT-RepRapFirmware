@@ -289,9 +289,9 @@ void parseACK(void)
         storeCmd("M409 K\"job.file\"\n");
       }
 
-      if(ack_seen("fraction_printed\":"))
+      if(ack_seen("fractionPrinted\":"))
       {
-        setPrintCur(ack_value()*100);
+        setPrintCur(ack_value());
       }
 
       
