@@ -175,40 +175,12 @@ void parseACK(void)
     }
     // end
 
-    if(ack_seen("status"))
+    if(ack_seen("{\"status\""))
     {
       infoHost.wait = false;
       avoid_terminal = infoSettings.terminalACK;
-      //parse temperature
-      if(ack_seen("heaters\":["))
-      {
-        // TOOL i = heatGetCurrentToolNozzle();
-        TOOL i = 0;
-        heatSetCurrentTemp(i, ack_value()+0.5);
 
-        // TOOL i = heatGetCurrentToolNozzle();
-        TOOL ii = 1;
-        heatSetCurrentTemp(ii, ack_second_value()+0.5);
-
-        if(ack_seen("active\":[") && !heatGetSendWaiting(i)) {
-          heatSyncTargetTemp(i, ack_value()+0.5);
-        }
-
-        if(!heatGetSendWaiting(ii)) {
-          heatSyncTargetTemp(ii, ack_second_value()+0.5);
-        }
-        
-        updateNextHeatCheckTime();
-      }
-
-      if(ack_seen("pos\":["))
-      {
-        storegantry(0, ack_value());
-        storegantry(1, ack_second_value());
-        storegantry(2, ack_third_value());
-      }
-
-      if(ack_seen("homed\":["))
+      if(ack_seen("axesHomed\":["))
       {
         if (ack_value() != 0 && ack_second_value() != 0 && ack_third_value() != 0) 
         {
@@ -220,16 +192,17 @@ void parseACK(void)
         }
       }
 
-      // parse and store feed rate percentage
-      if(ack_seen("sfactor\":"))
+      if(ack_seen("xyz\":["))
       {
-        speedSetPercent(0,ack_value());
+        storegantry(0, ack_value());
+        storegantry(1, ack_second_value());
+        storegantry(2, ack_third_value());
       }
 
-      // parse and store flow rate percentage
-      if(ack_seen("efactor\":["))
+      // parse Extruder
+      if(ack_seen("extr\":"))
       {
-        speedSetPercent(1,ack_value());
+        coordinateSetAxisActualSteps(E_AXIS, ack_value());
       }
 
       if (ack_seen("fanPercent\":["))
@@ -237,7 +210,53 @@ void parseACK(void)
         fanSetSpeed(0, ack_value()*2.55+0.5);
         // fanSetSpeed(1, ack_second_value());
       }
+
+      // parse and store feed rate percentage
+      if(ack_seen("speedFactor\":"))
+      {
+        speedSetPercent(0,ack_value());
+      }
+
+      // parse and store flow rate percentage
+      if(ack_seen("extrFactors\":["))
+      {
+        speedSetPercent(1,ack_value());
+      }
+
+      if(ack_seen("babystep\":"))
+      {
+        setBabyStep(ack_value());
+      }
+
+      //parse temperature
+      if(ack_seen("current\":["))
+      {
+        // TOOL i = heatGetCurrentToolNozzle();
+        TOOL i = 0;
+        heatSetCurrentTemp(i, ack_value()+0.5);
+
+        // TOOL i = heatGetCurrentToolNozzle();
+        TOOL ii = 1;
+        heatSetCurrentTemp(ii, ack_second_value()+0.5);
+
+        if(ack_seen(",\"active\":[") && !heatGetSendWaiting(i)) {
+          heatSyncTargetTemp(i, ack_value()+0.5);
+        }
+
+        if(ack_seen("{\"active\":[[") && !heatGetSendWaiting(ii)) {
+          heatSyncTargetTemp(ii, ack_value()+0.5);
+        }
+        
+        updateNextHeatCheckTime();
+      }
+      
     }
+    else if(ack_seen("message\":\""))
+    {
+      BUZZER_PLAY(sound_notify);
+      ackPopupInfo(echomagic);
+    }
+
 
     // if(ack_seen("Count E:")) // Parse actual extruder position, response of "M114 E\n", required "M114_DETAIL" in Marlin
     // {
@@ -276,92 +295,10 @@ void parseACK(void)
         setPrintCur(ack_value()*100);
       }
 
-      if(ack_seen("babystep\":"))
-      {
-        setBabyStep(ack_value());
-      }
+      
 
     }
-    // Parse M115 capability report
-    // else if(ack_seen("Cap:AUTOREPORT_TEMP:"))
-    // {
-    //   infoMachineSettings.autoReportTemp = ack_value();
-    // }
-    // else if(ack_seen("Cap:AUTOLEVEL:"))
-    // {
-    //   infoMachineSettings.autoLevel = ack_value();
-    // }
-    // else if(ack_seen("Cap:Z_PROBE:"))
-    // {
-    //   infoMachineSettings.zProbe = ack_value();
-    // }
-    // else if(ack_seen("Cap:LEVELING_DATA:"))
-    // {
-    //   infoMachineSettings.levelingData = ack_value();
-    // }
-    // else if(ack_seen("Cap:SOFTWARE_POWER:"))
-    // {
-    //   infoMachineSettings.softwarePower = ack_value();
-    // }
-    // else if(ack_seen("Cap:TOGGLE_LIGHTS:"))
-    // {
-    //   infoMachineSettings.toggleLights = ack_value();
-    // }
-    // else if(ack_seen("Cap:CASE_LIGHT_BRIGHTNESS:"))
-    // {
-    //   infoMachineSettings.caseLightsBrightness = ack_value();
-    // }
-    // else if(ack_seen("Cap:EMERGENCY_PARSER:"))
-    // {
-    //   infoMachineSettings.emergencyParser = ack_value();
-    // }
-    // else if(ack_seen("Cap:AUTOREPORT_SD_STATUS:"))
-    // {
-    //   infoMachineSettings.autoReportSDStatus = ack_value();
-    // }
-    // else if(ack_seen("Cap:CHAMBER_TEMPERATURE:"))
-    // {
-    //   setupMachine();
-    // }
 
-    //parse Repeatability Test
-    // else if(ack_seen("Mean:"))
-    // {
-    //   popupReminder((u8* )"Repeatability Test", (u8 *)dmaL2Cache + ack_index-5);
-    // }
-    // else if(ack_seen("Probe Offset"))
-    // {
-    //   if(ack_seen("Z"))
-    //   {
-    //     setParameter(P_PROBE_OFFSET,Z_STEPPER, ack_value());
-    //   }
-    // }
-    
-    //Parse error messages & Echo messages
-    // else if(ack_seen(errormagic))
-    // {
-    //   BUZZER_PLAY(sound_error);
-
-    //   ackPopupInfo(errormagic);
-    // }
-    // else if(ack_seen(echomagic))
-    // {
-    //   for(u8 i = 0; i < COUNT(ignoreEcho); i++)
-    //   {
-    //     if(strstr(dmaL2Cache, ignoreEcho[i]))
-    //     {
-    //       busyIndicator(STATUS_BUSY);
-    //       goto parse_end;
-    //     }
-    //   }
-    //   BUZZER_PLAY(sound_notify);
-    //   ackPopupInfo(echomagic);
-    // }
-    else if(ack_seen("message\":\""))
-    {
-      BUZZER_PLAY(sound_notify);
-      ackPopupInfo(echomagic);
-    }
     // ответ от M409 K"network.interfaces[0]"
     else if(ack_seen("network.interfaces[0].actualIP") && ack_seen("result\":\""))
     {

@@ -73,13 +73,13 @@ void menuExtrude(void)
   KEY_VALUES key_num = KEY_IDLE;
   float eSaved = 0.0f;
   float eTemp  = 0.0f;
-  bool  eRelative = false;
+  bool  eRelative = true;
   u32   feedrate = 0;
 
   while(infoCmd.count != 0) {loopProcess();}
   extrudeCoordinate = eTemp = eSaved = coordinateGetAxisTarget(E_AXIS);
   feedrate = coordinateGetFeedRate();
-  eRelative = eGetRelative();
+  // eRelative = eGetRelative();
 
   menuDrawPage(&extrudeItems);
   showExtrudeCoordinate();
