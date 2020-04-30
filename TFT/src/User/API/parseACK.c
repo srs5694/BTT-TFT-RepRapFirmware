@@ -248,6 +248,11 @@ void parseACK(void)
         
         updateNextHeatCheckTime();
       }
+
+      // if(ack_seen("currentLayer\":"))
+      // {
+        // setBabyStep(ack_value());
+      // }
       
     }
     else if(ack_seen("message\":\""))
@@ -294,8 +299,11 @@ void parseACK(void)
         setPrintCur(ack_value());
       }
 
-      
-
+      if(ack_seen("xyz\":["))
+      {
+        coordinateSetAxisTarget(Z_AXIS, ack_third_value());
+      }
+ 
     }
 
     // ответ от M409 K"network.interfaces[0]"
