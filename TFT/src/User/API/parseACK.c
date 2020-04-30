@@ -238,7 +238,7 @@ void parseACK(void)
         TOOL ii = 1;
         heatSetCurrentTemp(ii, ack_second_value()+0.5);
 
-        if(ack_seen(",\"active\":[") && !heatGetSendWaiting(i)) {
+        if(ack_seen(",\"active\":") && !heatGetSendWaiting(i)) {
           heatSyncTargetTemp(i, ack_value()+0.5);
         }
 
