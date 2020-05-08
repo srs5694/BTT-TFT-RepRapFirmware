@@ -167,7 +167,7 @@ void menuBeforePrinting(void)
 {
   request_M23(infoFile.title+5);
   request_M24(0);
-  infoHost.printing=true; // Global lock info on printer is busy in printing.
+  //infoHost.printing=true; // Global lock info on printer is busy in printing.
   infoPrinting.printing = true;
   infoMenu.menu[infoMenu.cur] = menuPrinting;
   printingItems.title.address = getCurGcodeName(infoFile.title);
@@ -511,12 +511,17 @@ void endPrinting(void)
   if(infoSettings.send_end_gcode == 1){
     mustStoreCmd(PRINT_END_GCODE);
   }
-  printerGotoIdle();
 }
 
 
 void completePrinting(void)
 {
+  endPrinting();
+  printingItems.items[KEY_ICON_7].icon = ICON_BACK;
+  printingItems.items[KEY_ICON_7].label.index = LABEL_BACK;
+  if (infoMenu.menu[infoMenu.cur] == menuPrinting)
+    menuDrawItem(&printingItems.items[KEY_ICON_7], KEY_ICON_7);
+
   BUZZER_PLAY(sound_success);
 
   u8  hour = infoPrinting.time/3600,
@@ -528,11 +533,6 @@ void completePrinting(void)
   statusScreen_setMsg((u8*)"Complete",(u8*)tempstr);
   popupReminder((u8*)"Complete",(u8*)tempstr);
 
-  endPrinting();
-  printingItems.items[KEY_ICON_7].icon = ICON_BACK;
-  printingItems.items[KEY_ICON_7].label.index = LABEL_BACK;
-  if (infoMenu.menu[infoMenu.cur] == menuPrinting)
-    menuDrawItem(&printingItems.items[KEY_ICON_7], KEY_ICON_7);
   if(infoSettings.auto_off) // Auto shut down after printing
   {
 		infoMenu.menu[++infoMenu.cur] = menuShutDown;
@@ -551,6 +551,7 @@ void abortPrinting(void)
   }
 
   endPrinting();
+  printerGotoIdle();
   exitPrinting();
 }
 

@@ -133,10 +133,6 @@ void parseACK(void)
       updateNextHeatCheckTime();
       infoHost.connected = true;
       storeCmd("M409 K\"network.interfaces[0].actualIP\"\n"); //RRF3
-      // storeCmd("M115\n");
-      // storeCmd("M503 S0\n");
-      // storeCmd("M92\n"); // Steps/mm of extruder is an important parameter for Smart filament runout
-                           // Avoid can't getting this parameter due to disabled M503 in Marlin
     }
 
     // Gcode command response
@@ -261,36 +257,31 @@ void parseACK(void)
       ackPopupInfo(echomagic);
     }
 
-
-    // if(ack_seen("Count E:")) // Parse actual extruder position, response of "M114 E\n", required "M114_DETAIL" in Marlin
-    // {
-    //   coordinateSetAxisActualSteps(E_AXIS, ack_value());
-    // }
-    if(infoHost.printing && ack_seen("status\":\"I"))
+    if(isPrinting() && ack_seen("status\":\"I"))
     {
-      infoHost.printing = false;
+      setPrinting(false);
       completePrinting();
     }
     // busy (e.g. running a macro)
     // этот статус не отдаёт
-    // else if(infoHost.printing && ack_seen("status\":\"B"))
+    // else if(isPrinting() && ack_seen("status\":\"B"))
     // {
     //   reminderMessage(LABEL_BUSY, STATUS_BUSY);
     // }
     // on PAUSE
-    else if(infoHost.printing && ack_seen("status\":\"A"))
+    else if(isPrinting() && ack_seen("status\":\"A"))
     {
       setPause(true);
     }
+    // on PRINTING
     else if(ack_seen("status\":\"P"))
     {
       if (isPause()) setPause(false);
 
-      setPrinting(true);
-
-      if(infoMenu.menu[infoMenu.cur] != menuPrinting && !infoHost.printing) {
-        infoMenu.menu[++infoMenu.cur] = menuPrinting;
-        infoHost.printing=true;
+      if(!isPrinting()) {
+        if(infoMenu.menu[infoMenu.cur] != menuPrinting) 
+          infoMenu.menu[++infoMenu.cur] = menuPrinting;
+        setPrinting(true);
         storeCmd("M409 K\"job.file\"\n");
       }
 
