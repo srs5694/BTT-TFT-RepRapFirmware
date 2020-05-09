@@ -259,7 +259,6 @@ void parseACK(void)
 
     if(isPrinting() && ack_seen("status\":\"I"))
     {
-      setPrinting(false);
       completePrinting();
     }
     // busy (e.g. running a macro)
@@ -315,10 +314,13 @@ void parseACK(void)
     // ответ от M409 K"job.file"
     else if(ack_seen("job.file") && ack_seen("fileName\":\""))
     {
-      // BUZZER_PLAY(sound_notify);
-      // ackPopupInfo(echomagic);
-      // infoFile.title = strtok ((u8 *)dmaL2Cache + ack_index ,"\"");
-      // printingItems.title.address = getCurGcodeName(strtok ((u8 *)dmaL2Cache + ack_index ,"\""));
+      resetInfoFile();
+      char *t = strtok(&dmaL2Cache[ack_index],"\"");
+      // EnterDir(t);
+      // strcat(infoFile.title,"/");
+      // strcat(infoFile.title,t);
+      popupReminder((u8*)"FILE",(u8*)t);
+      // GUI_DispStringInRect(0, 0, LCD_WIDTH, LCD_HEIGHT,(u8* )infoFile.title);
 
     }
     // beep buzzer

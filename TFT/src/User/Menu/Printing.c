@@ -83,8 +83,11 @@ bool isPrinting(void)
 void setPrinting(bool print)
 {
   infoPrinting.printing = print;
-  printingItems.items[KEY_ICON_7].icon = ICON_STOP;
-  printingItems.items[KEY_ICON_7].label.index = LABEL_STOP;
+  if (print) 
+  {
+    printingItems.items[KEY_ICON_7].icon = ICON_STOP;
+    printingItems.items[KEY_ICON_7].label.index = LABEL_STOP;
+  }
   // if (infoMenu.menu[infoMenu.cur] == menuPrinting)
   //   menuDrawItem(&printingItems.items[KEY_ICON_7], KEY_ICON_7);
 }
@@ -165,9 +168,8 @@ u8 *getCurGcodeName(char *path)
 
 void menuBeforePrinting(void)
 {
-  request_M23(infoFile.title+5);
+  request_M23(infoFile.title+3);
   request_M24(0);
-  //infoHost.printing=true; // Global lock info on printer is busy in printing.
   infoPrinting.printing = true;
   infoMenu.menu[infoMenu.cur] = menuPrinting;
   printingItems.title.address = getCurGcodeName(infoFile.title);
@@ -295,9 +297,6 @@ void reDrawTime(int icon_pos)
   sprintf(tempstr, "%02d:%02d:%02d", hour,min,sec);
   ICON_CustomReadDisplay(printinfo_points[icon_pos].x,printinfo_points[icon_pos].y,PICON_LG_WIDTH,PICON_HEIGHT,ICON_ADDR(ICON_PRINTING_TIMER));
   GUI_DispStringInPrect(&printinfo_val_rect[icon_pos], (u8 *)tempstr);
-  //GUI_DispDec(printinfo_val_rect[icon_pos].x0 + 2 * BYTE_WIDTH, TIME_Y, hour, 2, LEFT);
-  //GUI_DispDec(printinfo_val_rect[icon_pos].x0 + 5 * BYTE_WIDTH, TIME_Y, min, 2, LEFT);
-  //GUI_DispDec(printinfo_val_rect[icon_pos].x0 + 8 * BYTE_WIDTH, TIME_Y, sec, 2, LEFT);
 
   GUI_SetNumMode(GUI_NUMMODE_SPACE);
   GUI_SetTextMode(GUI_TEXTMODE_NORMAL);
@@ -506,8 +505,8 @@ void exitPrinting(void)
 void endPrinting(void)
 {
   infoPrinting.printing = infoPrinting.pause = false;
-  powerFailedClose();
-  powerFailedDelete();
+  // powerFailedClose();
+  // powerFailedDelete();
   if(infoSettings.send_end_gcode == 1){
     mustStoreCmd(PRINT_END_GCODE);
   }
@@ -524,6 +523,8 @@ void completePrinting(void)
 
   BUZZER_PLAY(sound_success);
 
+  infoMenu.cur--;
+
   u8  hour = infoPrinting.time/3600,
       min = infoPrinting.time%3600/60,
       sec = infoPrinting.time%60;
@@ -533,10 +534,11 @@ void completePrinting(void)
   statusScreen_setMsg((u8*)"Complete",(u8*)tempstr);
   popupReminder((u8*)"Complete",(u8*)tempstr);
 
-  if(infoSettings.auto_off) // Auto shut down after printing
-  {
-		infoMenu.menu[++infoMenu.cur] = menuShutDown;
-  }
+  // if(infoSettings.auto_off) // Auto shut down after printing
+  // {
+	// 	infoMenu.menu[++infoMenu.cur] = menuShutDown;
+  // }
+  exitPrinting();
   
 }
 
@@ -584,7 +586,7 @@ void menuStartPrinting(void)
   u16 key_num = IDLE_TOUCH;
 
   char buf[89];
-  sprintf(buf, "Do you want to start %.65s?\n", infoFile.title+4);
+  sprintf(buf, "Do you want to start %.65s?\n", infoFile.title);
 
   popupDrawPage(bottomDoubleBtn, textSelect(LABEL_INFO), (u8*)buf, textSelect(LABEL_CONFIRM), textSelect(LABEL_CANNEL));
 

@@ -30,7 +30,7 @@ TCHAR* getCurFileSource(void)
   {
     case TFT_SD:     return "SD:";
     case TFT_UDISK:  return "U:";
-    case BOARD_SD:   return "bSD:";
+    case BOARD_SD:   return "0:";
   }
   return NULL;
 }
