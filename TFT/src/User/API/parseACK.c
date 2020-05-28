@@ -175,7 +175,7 @@ void parseACK(void)
       infoHost.wait = false;
       avoid_terminal = infoSettings.terminalACK;
 
-      if(ack_seen("axesHomed\":["))
+      if(ack_seen("homed\":["))
       {
         if (ack_value() != 0 && ack_second_value() != 0 && ack_third_value() != 0) 
         {
@@ -187,18 +187,18 @@ void parseACK(void)
         }
       }
 
-      if(ack_seen("xyz\":["))
+      if(ack_seen("pos\":["))
       {
         storegantry(0, ack_value());
         storegantry(1, ack_second_value());
         storegantry(2, ack_third_value());
       }
 
-      // parse Extruder
-      if(ack_seen("extr\":"))
-      {
-        coordinateSetAxisActualSteps(E_AXIS, ack_value());
-      }
+      // parse Extruder only M408 S4
+      // if(ack_seen("extr\":"))
+      // {
+      //   coordinateSetAxisActualSteps(E_AXIS, ack_value());
+      // }
 
       if (ack_seen("fanPercent\":["))
       {
@@ -207,13 +207,13 @@ void parseACK(void)
       }
 
       // parse and store feed rate percentage
-      if(ack_seen("speedFactor\":"))
+      if(ack_seen("sfactor\":"))
       {
         speedSetPercent(0,ack_value());
       }
 
       // parse and store flow rate percentage
-      if(ack_seen("extrFactors\":["))
+      if(ack_seen("efactor\":["))
       {
         speedSetPercent(1,ack_value());
       }
@@ -224,7 +224,7 @@ void parseACK(void)
       }
 
       //parse temperature
-      if(ack_seen("current\":["))
+      if(ack_seen("heaters\":["))
       {
         // TOOL i = heatGetCurrentToolNozzle();
         TOOL i = 0;
@@ -234,12 +234,9 @@ void parseACK(void)
         TOOL ii = 1;
         heatSetCurrentTemp(ii, ack_second_value()+0.5);
 
-        if(ack_seen(",\"active\":") && !heatGetSendWaiting(i)) {
+        if(ack_seen(",\"active\":[") && !heatGetSendWaiting(i)) {
           heatSyncTargetTemp(i, ack_value()+0.5);
-        }
-
-        if(ack_seen("{\"active\":[[") && !heatGetSendWaiting(ii)) {
-          heatSyncTargetTemp(ii, ack_value()+0.5);
+          heatSyncTargetTemp(ii, ack_second_value()+0.5);
         }
         
         updateNextHeatCheckTime();
@@ -284,12 +281,12 @@ void parseACK(void)
         storeCmd("M409 K\"job.file\"\n");
       }
 
-      if(ack_seen("fractionPrinted\":"))
+      if(ack_seen("fraction_printed\":"))
       {
-        setPrintCur(ack_value());
+        setPrintCur(ack_value()*100+0.5);
       }
 
-      if(ack_seen("xyz\":["))
+      if(ack_seen("pos\":["))
       {
         coordinateSetAxisTarget(Z_AXIS, ack_third_value());
       }
