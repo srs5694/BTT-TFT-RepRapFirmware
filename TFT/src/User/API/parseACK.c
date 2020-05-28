@@ -278,7 +278,8 @@ void parseACK(void)
         if(infoMenu.menu[infoMenu.cur] != menuPrinting) 
           infoMenu.menu[++infoMenu.cur] = menuPrinting;
         setPrinting(true);
-        storeCmd("M409 K\"job.file\"\n");
+        // storeCmd("M409 K\"job.file\"\n");
+        storeCmd("M36\n");
       }
 
       if(ack_seen("fraction_printed\":"))
@@ -308,17 +309,13 @@ void parseACK(void)
         ackPopupInfo(echomagic);
       }
     }
-    // ответ от M409 K"job.file"
-    else if(ack_seen("job.file") && ack_seen("fileName\":\""))
+    // ответ от M409 K"job.file"  M36
+    else if(ack_seen("fileName\":\""))
     {
       resetInfoFile();
       char *t = strtok(&dmaL2Cache[ack_index],"\"");
-      // EnterDir(t);
-      // strcat(infoFile.title,"/");
-      // strcat(infoFile.title,t);
-      popupReminder((u8*)"FILE",(u8*)t);
-      // GUI_DispStringInRect(0, 0, LCD_WIDTH, LCD_HEIGHT,(u8* )infoFile.title);
-
+      EnterDir(t);
+      GUI_DispString(0, 0, (u8*)getCurGcodeName(infoFile.title));
     }
     // beep buzzer
     #ifdef BUZZER_PIN
