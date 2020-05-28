@@ -82,12 +82,20 @@ bool isPrinting(void)
 
 void setPrinting(bool print)
 {
-  infoPrinting.printing = print;
   if (print) 
   {
+    memset(&infoPrinting,0,sizeof(PRINTING));
     printingItems.items[KEY_ICON_7].icon = ICON_STOP;
     printingItems.items[KEY_ICON_7].label.index = LABEL_STOP;
+  } 
+  else
+  {
+    infoPrinting.printing = infoPrinting.pause = false;
+    printingItems.items[KEY_ICON_7].icon = ICON_BACK;
+    printingItems.items[KEY_ICON_7].label.index = LABEL_BACK;
   }
+  
+  infoPrinting.printing = print;
   // if (infoMenu.menu[infoMenu.cur] == menuPrinting)
   //   menuDrawItem(&printingItems.items[KEY_ICON_7], KEY_ICON_7);
 }
@@ -515,11 +523,9 @@ void endPrinting(void)
 
 void completePrinting(void)
 {
-  endPrinting();
-  printingItems.items[KEY_ICON_7].icon = ICON_BACK;
-  printingItems.items[KEY_ICON_7].label.index = LABEL_BACK;
-  if (infoMenu.menu[infoMenu.cur] == menuPrinting)
-    menuDrawItem(&printingItems.items[KEY_ICON_7], KEY_ICON_7);
+  setPrinting(false);
+  // if (infoMenu.menu[infoMenu.cur] == menuPrinting)
+  //   menuDrawItem(&printingItems.items[KEY_ICON_7], KEY_ICON_7);
 
   BUZZER_PLAY(sound_success);
 
@@ -531,7 +537,7 @@ void completePrinting(void)
 
   char tempstr[25];
   sprintf(tempstr, "Print time was %02d:%02d:%02d", hour,min,sec);
-  statusScreen_setMsg((u8*)"Complete",(u8*)tempstr);
+  // statusScreen_setMsg((u8*)"Complete",(u8*)tempstr);
   popupReminder((u8*)"Complete",(u8*)tempstr);
 
   // if(infoSettings.auto_off) // Auto shut down after printing
