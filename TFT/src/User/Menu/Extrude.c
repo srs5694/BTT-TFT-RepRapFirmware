@@ -71,15 +71,12 @@ void showExtrudeCoordinate(void)
 void menuExtrude(void)
 {
   KEY_VALUES key_num = KEY_IDLE;
-  float eSaved = 0.0f;
   float eTemp  = 0.0f;
-  bool  eRelative = true;
   u32   feedrate = 0;
 
   while(infoCmd.count != 0) {loopProcess();}
-  extrudeCoordinate = eTemp = eSaved = coordinateGetAxisTarget(E_AXIS);
+  extrudeCoordinate = eTemp = 0;
   feedrate = coordinateGetFeedRate();
-  // eRelative = eGetRelative();
 
   menuDrawPage(&extrudeItems);
   showExtrudeCoordinate();
@@ -87,7 +84,10 @@ void menuExtrude(void)
   #if LCD_ENCODER_SUPPORT
     encoderPosition = 0;
   #endif
-  if(eRelative) mustStoreCmd("M82\n"); // Set extruder to absolute
+
+  mustStoreCmd("M82\n"); // Set extruder to absolute
+  mustStoreCmd("G92 E%.5f\n",extrudeCoordinate);
+
   while(infoMenu.menu[infoMenu.cur] == menuExtrude)
   {
     key_num = menuKeyGetValue();
@@ -136,13 +136,12 @@ void menuExtrude(void)
     {
       extrudeCoordinate = eTemp;
       extrudeCoordinateReDraw();
-      if(item_extruder_i != heatGetCurrentToolNozzle() - NOZZLE0)
-        storeCmd("%s\n", tool_change[item_extruder_i]);
+      if(item_extruder_i != heatGetCurrentToolNozzle() - NOZZLE0) storeCmd("%s\n", tool_change[item_extruder_i]);
       storeCmd("G0 E%.5f F%d\n", extrudeCoordinate, item_speed[item_speed_i]);
     }
     loopProcess();
   }
-  mustStoreCmd("G92 E%.5f\n",eSaved);
+  
   mustStoreCmd("G0 F%d\n",feedrate);
-  if(eRelative) mustStoreCmd("M83\n"); // Set extruder to relative
+  mustStoreCmd("M83\n"); // Set extruder to relative
 }
