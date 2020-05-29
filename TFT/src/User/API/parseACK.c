@@ -315,7 +315,7 @@ void parseACK(void)
       resetInfoFile();
       char *t = strtok(&dmaL2Cache[ack_index],"\"");
       EnterDir(t);
-      GUI_DispString(0, 0, (u8*)getCurGcodeName(infoFile.title));
+      reDrawFileName();
     }
     // beep buzzer
     #ifdef BUZZER_PIN

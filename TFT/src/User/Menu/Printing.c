@@ -80,6 +80,23 @@ bool isPrinting(void)
   return infoPrinting.printing;
 }
 
+//only return gcode file name except path
+//for example:"SD:/test/123.gcode"
+//only return "123.gcode"
+u8 *getCurGcodeName(char *path)
+{
+  int i=strlen(path);
+  for(; path[i]!='/'&& i>0; i--)
+  {}
+  return (u8* )(&path[i+1]);
+}
+
+void reDrawFileName(void)
+{
+  printingItems.title.address = getCurGcodeName(infoFile.title);
+  menuDrawPage(&printingItems);
+}
+
 void setPrinting(bool print)
 {
   if (print) 
@@ -163,16 +180,7 @@ void printerGotoIdle(void)
   mustStoreCmd("M18\n");
 }
 
-//only return gcode file name except path
-//for example:"SD:/test/123.gcode"
-//only return "123.gcode"
-u8 *getCurGcodeName(char *path)
-{
-  int i=strlen(path);
-  for(; path[i]!='/'&& i>0; i--)
-  {}
-  return (u8* )(&path[i+1]);
-}
+
 
 void menuBeforePrinting(void)
 {

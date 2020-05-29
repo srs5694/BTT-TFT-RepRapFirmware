@@ -28,6 +28,7 @@ void setM0Pause(bool m0_pause);
 bool setPrintPause(bool is_pause,bool is_m0pause);
 
 bool isPrinting(void);
+void reDrawFileName(void);
 void setPrinting(bool print);
 void setPause(bool is_pause);
 bool isPause(void);
