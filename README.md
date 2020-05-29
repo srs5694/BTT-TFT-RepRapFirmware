@@ -2,6 +2,9 @@
 # Modification of the original firmware for working with the RepRapFirmware 3 through the AUX
 ### Tested with firmware [Experimental RepRapFirmware 3.01 RC6 Port for LPC](https://github.com/gloomyandy/RepRapFirmware/releases/tag/LPC_RRFv3.01RC6)
 
+In a config it is necessary to add
+<code>M575 P1 B57600 S0</code>
+
 # BigTreeTech Touchscreen Firmware
 ![GitHub](https://img.shields.io/github/license/bigtreetech/bigtreetech-TouchScreenFirmware.svg)
 [![GitHub contributors](https://img.shields.io/github/contributors/bigtreetech/bigtreetech-TouchScreenFirmware.svg)](https://github.com/bigtreetech/BIGTREETECH-TouchScreenFirmware/graphs/contributors)
