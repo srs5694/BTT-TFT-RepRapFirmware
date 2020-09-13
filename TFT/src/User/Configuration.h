@@ -101,7 +101,7 @@
  *
  * :[2400, 9600, 19200, 38400, 57600, 115200, 250000, 500000, 1000000]
  */
-#define BAUDRATE 115200
+#define BAUDRATE 57600
 
 /**
  * Default Touch Mode Language
@@ -115,7 +115,7 @@
 /**
  *  Show bootscreen when starting up
  */
-// #define SHOW_BTT_BOOTSCREEN
+ #define SHOW_BTT_BOOTSCREEN
 
 /**
  * The duration and frequency for the UI feedback sound.
@@ -159,14 +159,18 @@
 #define FAN_ID           {"F0",    "F1",    "F2",    "F3",    "F4",    "F5"}
 #define FAN_CMD          {"M106 P0", "M106 P1", "M106 P2", "M106 P3", "M106 P4", "M106 P5" };
 
+#define FAN_HALF_PWM     {128,       128,       128,       128,       128,       128}
+#define FAN_ID           {"F0",    "F1",    "F2",    "F3",    "F4",    "F5"}
+#define FAN_CMD          {"M106 P0", "M106 P1", "M106 P2", "M106 P3", "M106 P4", "M106 P5" };
+
 #define SPEED_ID         {"Sp.", "Fr."}
 
 #define AXIS_DISPLAY_ID  {"X",  "Y",  "Z",   "E",  "E2"}
 
 // Default move speed mm/min
-#define DEFAULT_SPEED_MOVE      3000
-#define SPEED_MOVE_SLOW         1000
-#define SPEED_MOVE_FAST         5000
+#define DEFAULT_SPEED_MOVE      6000
+#define SPEED_MOVE_SLOW         3000
+#define SPEED_MOVE_FAST         10000
 
 // Extrude speed mm/min
 #define EXTRUDE_SLOW_SPEED      60
@@ -179,7 +183,7 @@
 #define Z_MIN_POS 0
 #define X_MAX_POS 300
 #define Y_MAX_POS 300
-#define Z_MAX_POS 300
+#define Z_MAX_POS 400
 
 // Specify a pause position as { X, Y, Z_raise }
 #define NOZZLE_PAUSE_RETRACT_LENGTH 15   // (mm)
@@ -278,16 +282,16 @@
  */
 #define CUSTOM_0_LABEL "Disable Steppers"
 #define CUSTOM_0_GCODE "M84\n"
-#define CUSTOM_1_LABEL "IP"
-#define CUSTOM_1_GCODE "M409 K\"network.interfaces[0].actualIP\"\n"
+#define CUSTOM_1_LABEL "G32"
+#define CUSTOM_1_GCODE "G32\n"
 #define CUSTOM_2_LABEL "M409 Kjob"
 #define CUSTOM_2_GCODE "M409 K\"job\"\n"
 #define CUSTOM_3_LABEL "Allow move without home"
 #define CUSTOM_3_GCODE "M564 H0\n"
 #define CUSTOM_4_LABEL "Allow Extrude"
 #define CUSTOM_4_GCODE "M302 P1\n"
-#define CUSTOM_5_LABEL "Save to EEPROM"
-#define CUSTOM_5_GCODE "M500\n"
+#define CUSTOM_5_LABEL "G29"
+#define CUSTOM_5_GCODE "G29\n"
 #define CUSTOM_6_LABEL "Restore from EEPROM"
 #define CUSTOM_6_GCODE "M501\n"
 #define CUSTOM_7_LABEL "EEPROM Defaults"
