@@ -11,7 +11,7 @@ LABEL_FAN,
   {ICON_BACKGROUND,           LABEL_BACKGROUND},
   {ICON_BACKGROUND,           LABEL_BACKGROUND},
   {ICON_INC,                  LABEL_INC},
-  {ICON_FAN ,                 LABEL_FAN},
+  {ICON_FAN_HALF_SPEED,       LABEL_FAN_HALF_SPEED},
   {ICON_FAN_FULL_SPEED,       LABEL_FAN_FULL_SPEED},
   {ICON_STOP,                 LABEL_STOP},
   {ICON_BACK,                 LABEL_BACK},}
@@ -20,6 +20,7 @@ LABEL_FAN,
 const char* fanID[] = FAN_ID;
 const char* fanCmd[] = FAN_CMD;
 const u8    fanMaxPWM[] = FAN_MAX_PWM;
+const u8    fanHalfPWM[] = FAN_HALF_PWM;
 
 static u8   fanSpeed[FAN_NUM] = {0};
 static u8   curIndex = 0;
@@ -130,8 +131,7 @@ void menuFan(void)
         break;
 
       case KEY_ICON_4:
-        curIndex = (curIndex + 1) % FAN_NUM;
-        showFanSpeed();
+        fanSpeed[curIndex] = fanHalfPWM[curIndex];
         break;
 
       case KEY_ICON_5:
