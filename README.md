@@ -3,7 +3,7 @@
 ### Tested with firmware [Experimental RepRapFirmware 3.01 RC6 Port for LPC](https://github.com/gloomyandy/RepRapFirmware/releases/tag/LPC_RRFv3.01RC6)
 
 In a config it is necessary to add
-<code>M575 P1 B57600 S0</code>
+<code>M575 P1 S3 B57600</code>
 
 # BigTreeTech Touchscreen Firmware
 ![GitHub](https://img.shields.io/github/license/bigtreetech/bigtreetech-TouchScreenFirmware.svg)
