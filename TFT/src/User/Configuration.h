@@ -45,8 +45,8 @@
  *
  */
 #define DEFAULT_LCD_BRIGHTNESS 11     // 11: LCD_100_PERCENT - Brightness value from list
-#define DEFAULT_LCD_IDLE_BRIGHTNESS 2 // 2: LCD_10_PERCENT - Brightness value from list
-#define DEFAULT_LCD_IDLE_TIMER 1      // 1: LCD_DIM_OFF
+#define DEFAULT_LCD_IDLE_BRIGHTNESS 6 // 2: LCD_10_PERCENT - Brightness value from list
+#define DEFAULT_LCD_IDLE_TIMER 8      // 1: LCD_DIM_OFF
 #define LCD_DIM_CUSTOM_SECONDS 600    // Custom value in seconds. Will be used if \
                                       // LCD_DIM_CUSTOM_SECONDS is set as idle timer.
 
@@ -110,7 +110,7 @@
  *
  * Options: ARMENIAN, CHINESE, CZECH, DUTCH, ENGLISH, FRENCH, GERMAN, HUNGARIAN, ITALIAN, JAPANESE, POLISH, PORTUGUESE, RUSSIAN, SLOVAK, SPAIN
  */
-#define DEFAULT_LANGUAGE ENGLISH
+#define DEFAULT_LANGUAGE GERMAN
 
 /**
  *  Show bootscreen when starting up
