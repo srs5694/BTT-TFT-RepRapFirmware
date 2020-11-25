@@ -154,3 +154,38 @@ bool request_M25(void)
   mustStoreCmd("M25\n");
   return true;
 }
+
+char *request_M20_macros(char *nextdir)
+{
+  uint32_t timeout = ((uint32_t)0x000FFFFF);
+  if ((nextdir == NULL) || strchr(nextdir, '/') == NULL)
+  {
+    strcpy(requestCommandInfo.command, "M20 S2 P/macros/\n\n");
+  }
+  else
+  {
+    sprintf(requestCommandInfo.command, "M20 S2 P/macros/%s\n\n", nextdir);
+  }
+
+  //  strcpy(requestCommandInfo.startMagic, "{\"dir\"");
+  strcpy(requestCommandInfo.startMagic, "{");
+  //strcpy(requestCommandInfo.stopMagic, ",\"err\"");
+  strcpy(requestCommandInfo.stopMagic, "}");
+  strcpy(requestCommandInfo.errorMagic, "Error");
+  resetRequestCommandInfo();
+  mustStoreCmd(requestCommandInfo.command);
+  // Wait for response
+  WaitingGcodeResponse = 1;
+  while ((!requestCommandInfo.done) && (timeout > 0x00))
+  {
+    loopProcess();
+    timeout--;
+  }
+  WaitingGcodeResponse = 0;
+  if (timeout <= 0x00)
+  {
+    clearRequestCommandInfo();
+  }
+  //clearRequestCommandInfo(); //shall be call after copying the buffer ...
+  return requestCommandInfo.cmd_rev_buf;
+}

@@ -246,17 +246,21 @@
  * Manual Leveling
  * Move to four corner points to Leveling manually (Point 1, Point 2, Point 3, Point 4)
  */
+#define SCREW_OFFSET_LEFT 40
+#define SCREW_OFFSET_RIGHT 35
+#define SCREW_OFFSET_FRONT 34
+#define SCREW_OFFSET_BACK 28
 #define LEVELING_POINT_CENTER_X ((X_MAX_POS - X_MIN_POS) / 2)
 #define LEVELING_POINT_CENTER_Y ((Y_MAX_POS - Y_MIN_POS) / 2)
-#define LEVELING_POINT_1_X (X_MIN_POS + 40)
-#define LEVELING_POINT_1_Y (Y_MIN_POS + 34)
-#define LEVELING_POINT_2_X (X_MAX_POS - 35)
-#define LEVELING_POINT_2_Y (Y_MIN_POS + 34)
-#define LEVELING_POINT_3_X (X_MAX_POS - 35)
-#define LEVELING_POINT_3_Y (Y_MAX_POS - 28)
-#define LEVELING_POINT_4_X (X_MIN_POS + 40)
-#define LEVELING_POINT_4_Y (Y_MAX_POS - 28)
-#define LEVELING_POINT_Z 0.4f           // Z-axis position when nozzle stays for leveling
+#define LEVELING_POINT_1_X (X_MIN_POS + SCREW_OFFSET_LEFT)
+#define LEVELING_POINT_1_Y (Y_MIN_POS + SCREW_OFFSET_FRONT)
+#define LEVELING_POINT_2_X (X_MAX_POS - SCREW_OFFSET_RIGHT)
+#define LEVELING_POINT_2_Y (Y_MIN_POS + SCREW_OFFSET_FRONT)
+#define LEVELING_POINT_3_X (X_MAX_POS - SCREW_OFFSET_RIGHT)
+#define LEVELING_POINT_3_Y (Y_MAX_POS - SCREW_OFFSET_BACK)
+#define LEVELING_POINT_4_X (X_MIN_POS + SCREW_OFFSET_LEFT)
+#define LEVELING_POINT_4_Y (Y_MAX_POS - SCREW_OFFSET_BACK)
+#define LEVELING_POINT_Z 0.1f           // Z-axis position when nozzle stays for leveling
 #define LEVELING_POINT_MOVE_Z 10.0f     // Z-axis position when nozzle move to next point
 #define LEVELING_POINT_XY_FEEDRATE 6000 // (mm/min) X and Y axes move feedrate
 #define LEVELING_POINT_Z_FEEDRATE 600   // (mm/min) Z axis move feedrate
