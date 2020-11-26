@@ -49,7 +49,7 @@ char *request_M20(char *nextdir)
   }
   else
   {
-    sprintf(requestCommandInfo.command, "M20 S2 P/gcodes/%s\n\n", nextdir);
+    sprintf(requestCommandInfo.command, "M20 S2 P\"/gcodes/%s\"\n\n", nextdir);
   }
 
   //  strcpy(requestCommandInfo.startMagic, "{\"dir\"");
@@ -160,16 +160,14 @@ char *request_M20_macros(char *nextdir)
   uint32_t timeout = ((uint32_t)0x000FFFFF);
   if ((nextdir == NULL) || strchr(nextdir, '/') == NULL)
   {
-    strcpy(requestCommandInfo.command, "M20 S2 P/macros/\n\n");
+    strcpy(requestCommandInfo.command, "M20 S2 P\"/macros/\"\n\n");
   }
   else
   {
-    sprintf(requestCommandInfo.command, "M20 S2 P/macros/%s\n\n", nextdir);
+    sprintf(requestCommandInfo.command, "M20 S2 P\"/macros/\"%s\n\n", nextdir);
   }
 
-  //  strcpy(requestCommandInfo.startMagic, "{\"dir\"");
   strcpy(requestCommandInfo.startMagic, "{");
-  //strcpy(requestCommandInfo.stopMagic, ",\"err\"");
   strcpy(requestCommandInfo.stopMagic, "}");
   strcpy(requestCommandInfo.errorMagic, "Error");
   resetRequestCommandInfo();
